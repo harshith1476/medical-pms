@@ -29,14 +29,38 @@ const createTransporter = () => {
     console.log(`📧 Email Configuration:`);
     console.log(`   User: ${emailUser}`);
     console.log(`   Password: ${emailPassword ? '***' + emailPassword.slice(-4) : 'NOT SET'} (${emailPassword?.length || 0} characters)`);
+    console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
     
-    return nodemailer.createTransport({
+    // Create transporter with additional options for production
+    const transporterConfig = {
         service: 'gmail',
         auth: {
             user: emailUser,
             pass: emailPassword
         }
-    });
+    };
+    
+    // Add production-specific settings
+    if (process.env.NODE_ENV === 'production') {
+        transporterConfig.secure = true;
+        transporterConfig.tls = {
+            rejectUnauthorized: false // Allow self-signed certificates if needed
+        };
+    }
+    
+    const transporter = nodemailer.createTransport(transporterConfig);
+    
+    // Verify connection in production (async, but don't block)
+    if (process.env.NODE_ENV === 'production') {
+        transporter.verify().then(() => {
+            console.log('✅ Email server connection verified successfully');
+        }).catch((verifyError) => {
+            console.error('❌ Email server verification failed:', verifyError.message);
+            console.error('   This might indicate incorrect credentials or network issues');
+        });
+    }
+    
+    return transporter;
 };
 
 // General contact form email
