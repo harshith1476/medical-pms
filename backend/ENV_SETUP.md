@@ -30,7 +30,16 @@ CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-### Email Configuration (NEW - for Admin Panel Patient Communication)
+### Email Configuration
+
+#### Option 1: Brevo API (Recommended for OTP & Production)
+```env
+BERVO_API_KEY=xkeysib-your-brevo-api-key-here
+BERVO_SENDER_EMAIL=medichain@yourdomain.com
+BERVO_APP_NAME=Medichain
+```
+
+#### Option 2: Gmail SMTP (For Admin Panel Patient Communication)
 ```env
 ADMIN_EMAIL=medichain123@gmail.com
 ADMIN_EMAIL_PASSWORD=your_gmail_app_password_here

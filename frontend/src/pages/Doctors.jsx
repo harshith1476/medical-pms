@@ -17,7 +17,7 @@ const Doctors = () => {
   const [patientData, setPatientData] = useState(null)
   const navigate = useNavigate();
 
-  const { doctors, isDoctorsLoading } = useContext(AppContext)
+  const { doctors, isDoctorsLoading, token } = useContext(AppContext)
 
   const specialties = [
     'General physician', 
@@ -180,10 +180,17 @@ const Doctors = () => {
                 {filterDoc.map((item, index) => (
                   <div
                     onClick={() => {
-                      setSelectedDoctor(item)
-                      setShowBookingModal(true)
+                      // If logged in, open booking modal directly
+                      // If not logged in, navigate to profile page
+                      if (token) {
+                        setSelectedDoctor(item)
+                        setShowBookingModal(true)
+                      } else {
+                        navigate(`/doctor/${item._id}`)
+                        window.scrollTo(0, 0)
+                      }
                     }}
-                    className='doctor-card slide-in-up'
+                    className='doctor-card slide-in-up cursor-pointer'
                     key={index}
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
@@ -238,19 +245,37 @@ const Doctors = () => {
                         </div>
                       )}
                       
-                      {/* Book Appointment Button */}
+                      {/* Button - Changes based on login status */}
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
-                          setSelectedDoctor(item);
-                          setShowBookingModal(true);
+                          // If logged in, open booking modal directly
+                          // If not logged in, navigate to profile
+                          if (token) {
+                            setSelectedDoctor(item);
+                            setShowBookingModal(true);
+                          } else {
+                            navigate(`/doctor/${item._id}`);
+                            window.scrollTo(0, 0);
+                          }
                         }}
                         className='w-full mt-auto py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md transition-colors duration-200 flex items-center justify-center gap-1.5'
                       >
-                        <svg className='w-3.5 h-3.5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Book Appointment
+                        {token ? (
+                          <>
+                            <svg className='w-3.5 h-3.5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Book Appointment
+                          </>
+                        ) : (
+                          <>
+                            <svg className='w-3.5 h-3.5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            View Profile
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -261,8 +286,8 @@ const Doctors = () => {
         </div>
       </div>
 
-      {/* Appointment Booking Modal */}
-      {selectedDoctor && (
+      {/* Appointment Booking Modal - Only shown if logged in */}
+      {selectedDoctor && token && (
         <AppointmentBookingModal
           doctor={selectedDoctor}
           isOpen={showBookingModal}

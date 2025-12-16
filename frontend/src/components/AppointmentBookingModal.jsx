@@ -206,18 +206,18 @@ const AppointmentBookingModal = ({ doctor, isOpen, onClose, onProceed }) => {
                     onClick={(e) => e.stopPropagation()}
                     className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[calc(100vh-6rem)] overflow-y-auto z-[999999999]"
                 >
-                    {/* Header */}
-                    <div className="sticky top-0 bg-gradient-to-r from-cyan-500 to-blue-600 text-white p-6 rounded-t-2xl">
+                    {/* Header - Blue to Purple Gradient */}
+                    <div className="sticky top-0 bg-gradient-to-r from-blue-500 via-blue-600 to-purple-600 text-white p-6 rounded-t-2xl">
                         <div className="flex items-center justify-between">
                             <div>
                                 <h2 className="text-2xl font-bold">Book Appointment</h2>
-                                <p className="text-cyan-100 text-sm mt-1">with {doctor.name}</p>
+                                <p className="text-blue-100 text-sm mt-1">with {doctor.name}</p>
                             </div>
                             <button
                                 onClick={onClose}
                                 className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
                             >
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
@@ -228,52 +228,54 @@ const AppointmentBookingModal = ({ doctor, isOpen, onClose, onProceed }) => {
                     <div className="p-6">
                         {!showPatientForm && bookingFor === null && (
                             <>
-                                {/* Initial Question */}
+                                {/* Initial Question - Matching Image Design */}
                                 <div className="text-center mb-8">
-                                    <div className="w-20 h-20 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg className="w-10 h-10 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-blue-200">
+                                        <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
                                     </div>
                                     <h3 className="text-xl font-bold text-gray-800 mb-2">Who is this appointment for?</h3>
-                                    <p className="text-gray-600">Select an option to continue</p>
+                                    <p className="text-gray-600 text-sm">Select an option to continue</p>
                                 </div>
 
-                                {/* Options */}
+                                {/* Options - Perfect Match to Image */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    {/* Left Card - Light Blue/Green Gradient */}
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => handleBookingFor('myself')}
-                                        className="p-6 bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-200 rounded-xl hover:border-cyan-400 transition-all text-left group"
+                                        className="p-6 bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-md transition-all text-left group"
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                                                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-gray-800">Book for Myself</h4>
+                                                <h4 className="font-bold text-gray-800 text-base">Book for Myself</h4>
                                                 <p className="text-sm text-gray-600 mt-1">Use my profile details</p>
                                             </div>
                                         </div>
                                     </motion.button>
 
+                                    {/* Right Card - Light Pink/Purple Gradient */}
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => handleBookingFor('someone-else')}
-                                        className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl hover:border-purple-400 transition-all text-left group"
+                                        className="p-6 bg-gradient-to-br from-pink-50 via-purple-50 to-purple-50 border-2 border-pink-200 rounded-xl hover:border-purple-400 hover:shadow-md transition-all text-left group"
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
                                                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-gray-800">Book for Someone Else</h4>
+                                                <h4 className="font-bold text-gray-800 text-base">Book for Someone Else</h4>
                                                 <p className="text-sm text-gray-600 mt-1">Enter patient details</p>
                                             </div>
                                         </div>

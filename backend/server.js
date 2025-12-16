@@ -10,6 +10,7 @@ import jobApplicationRouter from "./routes/jobApplicationRoute.js"
 import emergencyRouter from "./routes/emergencyRoute.js"
 import aiRouter from "./routes/aiRoute.js"
 import specialtyRouter from "./routes/specialtyRoute.js"
+import otpRouter from "./routes/otpRoute.js"
 
 // app config
 const app = express()
@@ -29,6 +30,7 @@ app.use("/api/jobs", jobApplicationRouter)
 app.use("/api/emergency", emergencyRouter)
 app.use("/api/ai", aiRouter)
 app.use("/api/specialty", specialtyRouter)
+app.use("/api", otpRouter) // OTP routes: /api/send-otp, /api/verify-otp
 
 app.get("/", (req, res) => {
   res.send("API Working")
