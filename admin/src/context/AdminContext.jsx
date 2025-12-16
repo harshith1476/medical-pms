@@ -111,6 +111,29 @@ const AdminContextProvider = (props) => {
 
     }
 
+    // Function to delete all appointments
+    const deleteAllAppointments = async () => {
+        try {
+            const { data } = await axios.delete(backendUrl + '/api/admin/delete-all-appointments', { headers: { aToken } })
+
+            if (data.success) {
+                toast.success(`✅ ${data.message}`)
+                // Refresh all data
+                await Promise.all([
+                    getDashData(),
+                    getAllAppointments(),
+                    getAllDoctors()
+                ])
+            } else {
+                toast.error(data.message)
+            }
+
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message || 'Failed to delete appointments')
+        }
+    }
+
     const value = {
         aToken, setAToken,
         doctors,
@@ -120,7 +143,8 @@ const AdminContextProvider = (props) => {
         getAllAppointments,
         getDashData,
         cancelAppointment,
-        dashData
+        dashData,
+        deleteAllAppointments
     }
 
     return (

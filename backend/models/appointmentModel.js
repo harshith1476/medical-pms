@@ -11,7 +11,35 @@ const appointmentSchema = new mongoose.Schema({
     date: { type: Number, required: true },
     cancelled: { type: Boolean, default: false },
     payment: { type: Boolean, default: false },
-    isCompleted: { type: Boolean, default: false }
+    isCompleted: { type: Boolean, default: false },
+    // Queue System Fields
+    tokenNumber: { type: Number, default: null },
+    queuePosition: { type: Number, default: null },
+    estimatedWaitTime: { type: Number, default: 0 }, // in minutes
+    actualStartTime: { type: Number, default: null },
+    actualEndTime: { type: Number, default: null },
+    consultationDuration: { type: Number, default: null }, // in minutes
+    status: { type: String, enum: ['pending', 'in-queue', 'in-consult', 'completed', 'no-show', 'cancelled'], default: 'pending' },
+    isDelayed: { type: Boolean, default: false },
+    delayReason: { type: String, default: '' },
+    alerted: { type: Boolean, default: false }, // Whether patient has been alerted about their turn
+    // Symptoms Field (based on doctor specialization, not age)
+    selectedSymptoms: { type: [String], default: [] }, // Array of selected symptoms
+    // Actual Patient Information (for booking for someone else)
+    actualPatient: {
+        name: { type: String, default: '' },
+        age: { type: String, default: '' },
+        gender: { type: String, default: '' },
+        relationship: { type: String, default: '' },
+        medicalHistory: { type: [String], default: [] },
+        symptoms: { type: String, default: '' },
+        phone: { type: String, default: '' },
+        isSelf: { type: Boolean, default: true }
+    },
+    // Recent Prescription Upload
+    recentPrescription: { type: String, default: '' }, // URL to uploaded prescription file
+    // Consultation mode
+    mode: { type: String, enum: ['In-person', 'Video'], default: 'In-person' }
 })
 
 const appointmentModel = mongoose.models.appointment || mongoose.model("appointment", appointmentSchema)

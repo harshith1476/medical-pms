@@ -12,29 +12,29 @@ const DoctorsList = () => {
 }, [aToken])
 
   return (
-    <div className='m-5 max-h-[90vh] overflow-y-scroll'>
-      <h1 className='text-lg font-medium'>All Doctors</h1>
-      <div className='w-full grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pt-5'>
+    <div className='w-full min-h-full bg-white p-3 sm:p-4'>
+        <h1 className='text-base sm:text-lg font-medium mb-2 sm:mb-3'>All Doctors</h1>
+        <div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3'>
         {doctors.map((item, index) => (
-          <div className='border border-white rounded-2xl overflow-hidden cursor-pointer group bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md hover:-translate-y-0.5 transition'>
+          <div key={index} className='border border-gray-200 rounded-lg overflow-hidden cursor-pointer group bg-white shadow-sm hover:shadow-md transition'>
             <div className='relative'>
-              <img className='bg-[#EAEFFF] group-hover:bg-primary transition-all duration-500 w-full h-48 object-cover' src={item.image} alt="" />
-              <span className={`absolute top-3 left-3 text-[11px] px-2 py-1 rounded-full ${item.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{item.available ? 'Available' : 'Offline'}</span>
+              <img className='bg-[#EAEFFF] group-hover:bg-primary transition-all duration-500 w-full h-32 sm:h-36 object-cover' src={item.image} alt="" />
+              <span className={`absolute top-1.5 left-1.5 text-[9px] px-1.5 py-0.5 rounded-full ${item.available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{item.available ? 'Available' : 'Offline'}</span>
             </div>
-            <div className='p-4'>
-              <p className='text-[#262626] text-base font-semibold'>{item.name}</p>
-              <p className='text-[#5C5C5C] text-sm'>{item.speciality}</p>
-              <div className='mt-3 flex items-center justify-between text-sm'>
-                <label className='flex items-center gap-2'>
-                  <input onChange={()=>changeAvailability(item._id)} type="checkbox" checked={item.available} />
+            <div className='p-2.5 sm:p-3'>
+              <p className='text-[#262626] text-sm font-semibold truncate'>{item.name}</p>
+              <p className='text-[#5C5C5C] text-xs truncate'>{item.speciality}</p>
+              <div className='mt-2 flex items-center justify-between text-xs'>
+                <label className='flex items-center gap-1.5 cursor-pointer'>
+                  <input onChange={()=>changeAvailability(item._id)} type="checkbox" checked={item.available} className='cursor-pointer' />
                   <span>Toggle</span>
                 </label>
-                <span className='text-xs text-gray-400'>ID: {index+1}</span>
+                <span className='text-[10px] text-gray-400'>ID: {index+1}</span>
               </div>
             </div>
           </div>
         ))}
-      </div>
+        </div>
     </div>
   )
 }

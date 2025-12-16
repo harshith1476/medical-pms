@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { QRCodeSVG } from 'react-qr-code'
+import QRCode from 'react-qr-code'
 import html2canvas from 'html2canvas'
 import { toast } from 'react-toastify'
 
@@ -402,11 +402,12 @@ const DoctorAppointmentBooking = ({ doctors = [], userData = null }) => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setShowTicket(false)}
-                className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
+                className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+                style={{ zIndex: 9999999998 }}
               />
 
               {/* Ticket */}
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+              <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-none" style={{ zIndex: 9999999999 }}>
                 <motion.div
                   initial={{ opacity: 0, y: 50, scale: 0.8 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -474,12 +475,11 @@ const DoctorAppointmentBooking = ({ doctors = [], userData = null }) => {
                       {/* QR Code */}
                       <div className="flex justify-center mb-6">
                         <div className="bg-white p-4 rounded-xl">
-                          <QRCodeSVG
+                          <QRCode
                             value={appointmentData.qrData}
                             size={150}
                             level="H"
                             style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                            viewBox={`0 0 150 150`}
                           />
                         </div>
                       </div>

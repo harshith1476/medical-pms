@@ -93,7 +93,7 @@ export const doctors = [
         speciality: 'General physician',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Richard James is a trusted general physician with a strong focus on preventive care, lifestyle counselling, and early diagnosis of chronic conditions. He is known for listening carefully to patients, explaining treatment options in simple language, and building long‑term relationships with families.',
         fees: 50,
         address: {
             line1: '17th Cross, Richmond',
@@ -107,7 +107,7 @@ export const doctors = [
         speciality: 'Gynecologist',
         degree: 'MBBS',
         experience: '3 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Emily Larson is a compassionate gynecologist who specializes in women’s health across all stages of life, from adolescence to menopause. She believes in evidence‑based care, respectful communication, and creating a safe environment where every patient feels heard and supported.',
         fees: 60,
         address: {
             line1: '27th Cross, Richmond',
@@ -121,7 +121,7 @@ export const doctors = [
         speciality: 'Dermatologist',
         degree: 'MBBS',
         experience: '1 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Sarah Patel is a dermatologist with a keen interest in acne management, hair and scalp disorders, and cosmetic dermatology. She combines modern therapies with skin‑care education so that patients understand how to protect and maintain healthy skin every day.',
         fees: 30,
         address: {
             line1: '37th Cross, Richmond',
@@ -135,7 +135,7 @@ export const doctors = [
         speciality: 'Pediatricians',
         degree: 'MBBS',
         experience: '2 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Christopher Lee is a caring pediatrician who enjoys working closely with parents to track growth, development, and vaccination schedules. His gentle approach helps children feel comfortable during visits while ensuring early detection and treatment of common childhood illnesses.',
         fees: 40,
         address: {
             line1: '47th Cross, Richmond',
@@ -149,7 +149,7 @@ export const doctors = [
         speciality: 'Neurologist',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Jennifer Garcia is a neurologist experienced in treating migraines, seizure disorders, and nerve‑related conditions. She focuses on detailed evaluations, clear explanations of test results, and long‑term management plans tailored to each patient’s daily routine.',
         fees: 50,
         address: {
             line1: '57th Cross, Richmond',
@@ -163,7 +163,7 @@ export const doctors = [
         speciality: 'Neurologist',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Andrew Williams is a neurologist with a special interest in stroke rehabilitation and memory disorders. He works closely with multi‑disciplinary teams to improve quality of life, focusing on both medical treatment and practical lifestyle adjustments.',
         fees: 50,
         address: {
             line1: '57th Cross, Richmond',
@@ -177,7 +177,7 @@ export const doctors = [
         speciality: 'General physician',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Christopher Davis is a general physician who manages everyday health concerns, chronic diseases, and annual health check‑ups. He emphasizes patient education, preventive screenings, and coordinated care with specialists when needed.',
         fees: 50,
         address: {
             line1: '17th Cross, Richmond',
@@ -191,7 +191,7 @@ export const doctors = [
         speciality: 'Gynecologist',
         degree: 'MBBS',
         experience: '3 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Timothy White is a gynecologist focused on safe pregnancies, menstrual health, and minimally invasive procedures. His practice blends advanced diagnostics with a warm, reassuring bedside manner that helps patients feel confident in their care.',
         fees: 60,
         address: {
             line1: '27th Cross, Richmond',
@@ -205,7 +205,7 @@ export const doctors = [
         speciality: 'Dermatologist',
         degree: 'MBBS',
         experience: '1 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Ava Mitchell is a dermatologist passionate about treating eczema, allergies, and pigmentation concerns in all age groups. She focuses on gentle, science‑backed treatments and personalized skin‑care routines that fit into each patient’s lifestyle.',
         fees: 30,
         address: {
             line1: '37th Cross, Richmond',
@@ -219,7 +219,7 @@ export const doctors = [
         speciality: 'Pediatricians',
         degree: 'MBBS',
         experience: '2 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Jeffrey King is a pediatrician who combines clinical expertise with a friendly, playful approach to children. He supports parents with clear guidance on nutrition, immunity, and developmental milestones from infancy through adolescence.',
         fees: 40,
         address: {
             line1: '47th Cross, Richmond',
@@ -233,7 +233,7 @@ export const doctors = [
         speciality: 'Neurologist',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Zoe Kelly is a neurologist experienced in movement disorders, neuropathies, and complex headache syndromes. She believes in collaborative decision‑making, helping patients and families understand every step of the treatment journey.',
         fees: 50,
         address: {
             line1: '57th Cross, Richmond',
@@ -247,7 +247,7 @@ export const doctors = [
         speciality: 'Neurologist',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Patrick Harris is a neurologist with a focus on epilepsy care and neuro‑rehabilitation. He works to design practical treatment plans that balance medication, therapy, and lifestyle changes for better long‑term outcomes.',
         fees: 50,
         address: {
             line1: '57th Cross, Richmond',
@@ -261,7 +261,7 @@ export const doctors = [
         speciality: 'General physician',
         degree: 'MBBS',
         experience: '4 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Chloe Evans is a general physician who manages chronic conditions such as diabetes, hypertension, and thyroid disorders. She focuses on regular follow‑ups, structured treatment plans, and empowering patients to make informed health choices every day.',
         fees: 50,
         address: {
             line1: '17th Cross, Richmond',
@@ -275,7 +275,7 @@ export const doctors = [
         speciality: 'Gynecologist',
         degree: 'MBBS',
         experience: '3 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Ryan Martinez is a gynecologist specializing in high‑risk pregnancies and advanced fertility evaluation. He is dedicated to providing respectful, confidential care and guiding families through important reproductive health decisions.',
         fees: 60,
         address: {
             line1: '27th Cross, Richmond',
@@ -289,7 +289,7 @@ export const doctors = [
         speciality: 'Dermatologist',
         degree: 'MBBS',
         experience: '1 Years',
-        about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
+        about: 'Dr. Amelia Hill is a dermatologist who focuses on teen skin health, cosmetic concerns, and long‑term skin protection. She enjoys designing clear, step‑by‑step treatment routines that help patients see consistent improvements over time.',
         fees: 30,
         address: {
             line1: '37th Cross, Richmond',

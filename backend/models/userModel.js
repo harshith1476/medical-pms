@@ -8,7 +8,30 @@ const userSchema = new mongoose.Schema({
     address: { type: Object, default: { line1: '', line2: '' } },
     gender: { type: String, default: 'Not Selected' },
     dob: { type: String, default: 'Not Selected' },
+    age: { type: Number, default: null },
+    bloodGroup: { type: String, default: '' },
+    role: { type: String, enum: ['patient', 'doctor'], default: 'patient' }, // Role-based access: patient or doctor
     password: { type: String, required: true },
+    resetPasswordOTP: { type: String },
+    resetPasswordOTPExpiry: { type: Date },
+    emergencyContacts: {
+        friends: {
+            type: [{
+                name: { type: String, required: true },
+                phone: { type: String, required: true },
+                relation: { type: String, default: 'Friend' }
+            }],
+            default: []
+        },
+        family: {
+            type: [{
+                name: { type: String, required: true },
+                phone: { type: String, required: true },
+                relation: { type: String, required: true } // Father, Mother, Brother, Sister, etc.
+            }],
+            default: []
+        }
+    }
 })
 
 const userModel = mongoose.models.user || mongoose.model("user", userSchema);

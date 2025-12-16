@@ -1,33 +1,89 @@
 import React, { useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
+import { SkeletonCard } from './LoadingSpinner'
+
 const TopDoctors = () => {
 
     const navigate = useNavigate()
+    const { doctors, isDoctorsLoading } = useContext(AppContext)
 
-    const { doctors } = useContext(AppContext)
+    // Sort doctors: Available first, then unavailable
+    const sortedDoctors = [...doctors].sort((a, b) => {
+        if (a.available === b.available) return 0
+        return a.available ? -1 : 1
+    })
 
     return (
-        <div className='flex flex-col items-center gap-4 my-16 text-[#262626] md:mx-10'>
-            <h1 className='text-3xl font-medium'>Top Doctors to Book</h1>
-            <p className='sm:w-1/3 text-center text-sm'>Simply browse through our extensive list of trusted doctors.</p>
-            <div className='w-full grid grid-cols-auto gap-4 pt-5 gap-y-6 px-3 sm:px-0'>
-                {doctors.slice(0, 10).map((item, index) => (
-                    <div onClick={() => { navigate(`/appointment/${item._id}`); scrollTo(0, 0) }} className='border border-[#C9D8FF] rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500' key={index}>
-                        <img className='bg-[#EAEFFF]' src={item.image} alt="" />
-                        <div className='p-4'>
-                            <div className={`flex items-center gap-2 text-sm text-center ${item.available ? 'text-green-500' : "text-gray-500"}`}>
-                                <p className={`w-2 h-2 rounded-full ${item.available ? 'bg-green-500' : "bg-gray-500"}`}></p><p>{item.available ? 'Available' : "Not Available"}</p>
-                            </div>
-                            <p className='text-[#262626] text-lg font-medium'>{item.name}</p>
-                            <p className='text-[#5C5C5C] text-sm'>{item.speciality}</p>
-                        </div>
-                    </div>
-                ))}
+        <div className='py-12 px-4 sm:px-6 lg:px-8'>
+            {/* Section Header */}
+            <div className='text-center mb-8'>
+                <h2 className='section-title'>Top Doctors to Book</h2>
+                <p className='section-subtitle max-w-xl mx-auto'>
+                    Simply browse through our extensive list of trusted doctors and book your appointment hassle-free.
+                </p>
             </div>
-            <button onClick={() => { navigate('/doctors'); scrollTo(0, 0) }} className='bg-[#EAEFFF] text-gray-600 px-12 py-3 rounded-full mt-10'>more</button>
-        </div>
 
+            {/* Loading State */}
+            {isDoctorsLoading ? (
+                <div className='doctors-grid'>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                        <SkeletonCard key={i} />
+                    ))}
+                </div>
+            ) : (
+                <>
+                    {/* Doctor Cards Grid - Circular Profile Design */}
+                    <div className='top-doctors-grid'>
+                        {sortedDoctors.slice(0, 8).map((item, index) => (
+                            <div 
+                                onClick={() => { navigate(`/appointment/${item._id}`); window.scrollTo(0, 0) }} 
+                                className='top-doctor-card group slide-in-up'
+                                key={index}
+                                style={{ animationDelay: `${index * 0.05}s` }}
+                            >
+                                {/* Circular Profile Picture Container */}
+                                <div className='top-doctor-image-wrapper'>
+                                    <div className='top-doctor-image-container'>
+                                        <img 
+                                            className='top-doctor-image' 
+                                            src={item.image} 
+                                            alt={item.name} 
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Card Content */}
+                                <div className='top-doctor-content'>
+                                    <h3 className='top-doctor-name'>
+                                        {item.name}
+                                    </h3>
+                                    <p className='top-doctor-specialty'>{item.speciality}</p>
+                                    {item.experience && (
+                                        <p className='top-doctor-experience'>
+                                            {item.experience} Year{item.experience !== 1 ? 's' : ''} Experience
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* View More Button */}
+                    <div className='flex justify-center mt-8'>
+                        <button 
+                            onClick={() => navigate('/doctors')} 
+                            className='btn btn-secondary btn-lg group'
+                        >
+                            View All Doctors
+                            <svg className='w-5 h-5 transform group-hover:translate-x-1 transition-transform' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
     )
 }
 

@@ -8,13 +8,319 @@
 }
 
 ::-webkit-scrollbar{
-    display: none;
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track{
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 html, body {
     width: 100%;
     min-width: 320px;
     overflow-x: hidden;
+    overflow-y: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
+
+#root {
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* Smooth scrolling for all scrollable containers */
+* {
+    scroll-behavior: smooth;
+}
+
+/* Main content area - free scrolling */
+.main-content-area {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    min-height: calc(100vh - 64px);
+}
+
+/* Ensure all page containers extend to bottom at same level */
+.main-content-area > * {
+    width: 100%;
+    min-height: calc(100vh - 64px);
+}
+
+/* ===== Glassmorphism Effects ===== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.glass-card-hover {
+    transition: all 0.3s ease;
+}
+
+/* Admin Panel: No hover transforms, only subtle color/shadow changes */
+.glass-card-hover:hover {
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.4);
+    background: rgba(255, 255, 255, 0.22);
+}
+
+/* ===== Neumorphism Effects ===== */
+.neumorphism {
+    background: #f0f0f3;
+    box-shadow: 
+        20px 20px 60px #bebebe,
+        -20px -20px 60px #ffffff;
+    border-radius: 20px;
+}
+
+.neumorphism-inset {
+    background: #f0f0f3;
+    box-shadow: 
+        inset 20px 20px 60px #bebebe,
+        inset -20px -20px 60px #ffffff;
+    border-radius: 20px;
+}
+
+/* ===== Gradient Backgrounds ===== */
+.gradient-bg-blue-purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-bg-soft {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* ===== Hover Glow Effects ===== */
+.hover-glow {
+    transition: all 0.3s ease;
+}
+
+/* Admin Panel: No hover transforms */
+.hover-glow:hover {
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+}
+
+/* ===== Ripple Effect ===== */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* ===== Smooth Animations ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+/* ===== MediChain Official Brand Colors ===== */
+:root {
+    --primary-blue: #007BFF;
+    --medical-aqua: #41D6C3;
+    --purple-accent: #6F2CFF;
+    --text-dark: #1A1C26;
+    --gradient-soft: linear-gradient(135deg, #F7FAFF 0%, #EEF2FF 100%);
+    --medichain-primary: #007BFF;
+    --medichain-aqua: #41D6C3;
+    --medichain-purple: #6F2CFF;
+}
+
+/* ===== Medical Glassmorphism ===== */
+.medical-glass {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+}
+
+/* ===== Neon Accent Bar Animation ===== */
+@keyframes neonGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(111, 44, 255, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(111, 44, 255, 0.8), 0 0 30px rgba(111, 44, 255, 0.4);
+    }
+}
+
+.neon-accent {
+    animation: neonGlow 2s ease-in-out infinite;
+}
+
+/* ===== Icon Glow Effect ===== */
+@keyframes iconPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 5px rgba(0, 123, 255, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 15px rgba(0, 123, 255, 0.8));
+    }
+}
+
+.icon-glow {
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+/* ===== Gradient Underline Animation ===== */
+@keyframes gradientUnderline {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.gradient-underline {
+    background: linear-gradient(90deg, #007BFF, #41D6C3, #6F2CFF, #007BFF);
+    background-size: 200% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientUnderline 3s linear infinite;
+}
+
+/* ===== Pill Badge Styles ===== */
+.pill-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.25s ease-in-out;
+}
+
+/* Admin Panel: No hover transforms */
+.pill-badge:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Hover Lift Animation ===== */
+.hover-lift {
+    transition: all 0.25s ease-in-out;
+}
+
+/* Admin Panel: No hover transforms, only subtle shadow */
+.hover-lift:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Medical Background Gradient ===== */
+.medical-bg {
+    background: linear-gradient(135deg, #F7FAFF 0%, #EEF2FF 100%);
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* ===== Full Width Page Containers ===== */
+.main-content-area > * {
+    width: 100%;
+}
+
+/* ===== Checkmark Animation ===== */
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.checkmark-animate {
+    animation: checkmark 0.5s ease-out;
+}
+
+/* ===== Chart Container ===== */
+.chart-container {
+    position: relative;
+    height: 240px;
+    width: 100%;
 }
 
 @media (min-width: 1920px){

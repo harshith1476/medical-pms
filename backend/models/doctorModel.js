@@ -14,6 +14,20 @@ const doctorSchema = new mongoose.Schema({
     slots_booked: { type: Object, default: {} },
     address: { type: Object, required: true },
     date: { type: Number, required: true },
+    // Queue System Fields
+    status: { type: String, enum: ['in-clinic', 'in-consult', 'on-break', 'unavailable', 'online'], default: 'in-clinic' },
+    currentAppointmentId: { type: String, default: null }, // Currently consulting patient
+    averageConsultationTime: { type: Number, default: 15 }, // Average consultation time in minutes
+    breakStartTime: { type: Number, default: null },
+    breakDuration: { type: Number, default: 15 }, // Break duration in minutes
+    // Video Consultation Fields
+    videoConsult: { type: Boolean, default: false }, // Enable video consultation
+    location: { 
+        lat: { type: Number, default: null },
+        lng: { type: Number, default: null }
+    },
+    hospital: { type: String, default: '' } // Hospital/Clinic name
+    // Removed: Age-based symptom fields (no longer needed - symptoms now based on specialization)
 }, { minimize: false })
 
 const doctorModel = mongoose.models.doctor || mongoose.model("doctor", doctorSchema);

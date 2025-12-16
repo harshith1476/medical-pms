@@ -1,13 +1,35 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { assets } from '../../assets/assets'
-import { useContext } from 'react'
 import { AdminContext } from '../../context/AdminContext'
 import { AppContext } from '../../context/AppContext'
+import { useSocket } from '../../context/SocketContext'
+import { toast } from 'react-toastify'
+import GlassCard from '../../components/ui/GlassCard'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
+import * as XLSX from 'xlsx'
+import axios from 'axios'
+import PatientDetailsModal from '../../components/PatientDetailsModal'
+import EmailModal from '../../components/EmailModal'
 
 const AllAppointments = () => {
-
   const { aToken, appointments, cancelAppointment, getAllAppointments } = useContext(AdminContext)
   const { slotDateFormat, calculateAge, currency } = useContext(AppContext)
+  const { socket, isConnected } = useSocket()
+  const [currentTime, setCurrentTime] = useState(new Date())
+  const [filteredAppointments, setFilteredAppointments] = useState([])
+  const [filters, setFilters] = useState({
+    date: '',
+    doctor: '',
+    status: ''
+  })
+  const [doctors, setDoctors] = useState([])
+  const [helplineMap, setHelplineMap] = useState({}) // Map of docId -> helpline number
+  const [selectedPatient, setSelectedPatient] = useState(null)
+  const [showPatientModal, setShowPatientModal] = useState(false)
+  const [showEmailModal, setShowEmailModal] = useState(false)
+  const [selectedAppointmentForEmail, setSelectedAppointmentForEmail] = useState(null)
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
 
   useEffect(() => {
     if (aToken) {
@@ -15,38 +37,685 @@ const AllAppointments = () => {
     }
   }, [aToken])
 
+  // Fetch helpline numbers for appointments
+  useEffect(() => {
+    const fetchHelplines = async () => {
+      if (appointments.length === 0) return
+      
+      const helplinePromises = appointments.map(async (apt) => {
+        try {
+          const response = await axios.get(`${backendUrl}/api/specialty/helpline/${apt.docData._id}`)
+          if (response.data.success && response.data.data) {
+            return { docId: apt.docData._id, helpline: response.data.data }
+          }
+        } catch (error) {
+          // Silently fail if helpline not found
+        }
+        return null
+      })
+      
+      const results = await Promise.all(helplinePromises)
+      const map = {}
+      results.forEach(result => {
+        if (result) {
+          map[result.docId] = result.helpline
+        }
+      })
+      setHelplineMap(map)
+    }
+    
+    fetchHelplines()
+  }, [appointments])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Extract unique doctors for filter
+  useEffect(() => {
+    if (appointments.length > 0) {
+      const uniqueDoctors = [...new Map(appointments.map(apt => [apt.docData._id, apt.docData])).values()]
+      setDoctors(uniqueDoctors)
+    }
+  }, [appointments])
+
+  // Apply filters
+  useEffect(() => {
+    let filtered = [...appointments]
+
+    if (filters.date) {
+      filtered = filtered.filter(apt => apt.slotDate === filters.date)
+    }
+
+    if (filters.doctor) {
+      filtered = filtered.filter(apt => apt.docData._id === filters.doctor)
+    }
+
+    if (filters.status) {
+      if (filters.status === 'cancelled') {
+        filtered = filtered.filter(apt => apt.cancelled)
+      } else if (filters.status === 'completed') {
+        filtered = filtered.filter(apt => apt.isCompleted)
+      } else if (filters.status === 'active') {
+        filtered = filtered.filter(apt => !apt.cancelled && !apt.isCompleted)
+      }
+    }
+
+    setFilteredAppointments(filtered)
+  }, [appointments, filters])
+
+  // Listen for real-time updates
+  useEffect(() => {
+    if (socket && isConnected) {
+      socket.on('appointment-updated', () => {
+        getAllAppointments()
+      })
+
+      return () => {
+        socket.off('appointment-updated')
+      }
+    }
+  }, [socket, isConnected])
+
+  const formatTime = (date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    })
+  }
+
+  const exportToExcel = () => {
+    const headers = ['#', 'Patient', 'Age', 'Date', 'Time', 'Doctor', 'Speciality', 'Fees', 'Status']
+    const rows = filteredAppointments.map((item, index) => [
+      index + 1,
+      item.actualPatient && !item.actualPatient.isSelf 
+        ? `${item.actualPatient.name} (${item.actualPatient.relationship})` 
+        : item.userData.name,
+      item.actualPatient && !item.actualPatient.isSelf 
+        ? item.actualPatient.age 
+        : calculateAge(item.userData.dob),
+      slotDateFormat(item.slotDate),
+      item.slotTime,
+      item.docData.name,
+      item.docData.speciality,
+      `${currency}${item.amount}`,
+      item.cancelled ? 'Cancelled' : item.isCompleted ? 'Completed' : 'Active'
+    ])
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new()
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows])
+    
+    // Set column widths
+    ws['!cols'] = [
+      { wch: 5 },   // #
+      { wch: 25 },  // Patient
+      { wch: 8 },   // Age
+      { wch: 15 },  // Date
+      { wch: 12 },  // Time
+      { wch: 20 },  // Doctor
+      { wch: 18 },  // Speciality
+      { wch: 12 },  // Fees
+      { wch: 12 }   // Status
+    ]
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Appointments')
+
+    // Generate Excel file and download
+    const fileName = `appointments_${new Date().toISOString().split('T')[0]}.xlsx`
+    XLSX.writeFile(wb, fileName)
+    toast.success('Excel file exported successfully!')
+  }
+
+  const exportToPDF = () => {
+    const doc = new jsPDF()
+    
+    doc.setFontSize(18)
+    doc.text('All Appointments Report', 14, 22)
+    doc.setFontSize(11)
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30)
+
+    const tableData = filteredAppointments.map((item, index) => [
+      index + 1,
+      item.actualPatient && !item.actualPatient.isSelf 
+        ? `${item.actualPatient.name} (${item.actualPatient.relationship})` 
+        : item.userData.name,
+      item.actualPatient && !item.actualPatient.isSelf 
+        ? item.actualPatient.age 
+        : calculateAge(item.userData.dob),
+      `${slotDateFormat(item.slotDate)} ${item.slotTime}`,
+      item.docData.name,
+      item.docData.speciality,
+      `${currency}${item.amount}`,
+      item.cancelled ? 'Cancelled' : item.isCompleted ? 'Completed' : 'Active'
+    ])
+
+    doc.autoTable({
+      head: [['#', 'Patient', 'Age', 'Date & Time', 'Doctor', 'Speciality', 'Fees', 'Status']],
+      body: tableData,
+      startY: 35,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [102, 126, 234] }
+    })
+
+    doc.save(`appointments_${new Date().toISOString().split('T')[0]}.pdf`)
+    toast.success('PDF exported successfully!')
+  }
+
   return (
-    <div className='w-full max-w-6xl m-5 '>
-
-      <p className='mb-3 text-lg font-medium'>All Appointments</p>
-
-      <div className='bg-white/80 backdrop-blur-sm border rounded text-sm shadow-sm max-h-[80vh] overflow-y-scroll'>
-        <div className='hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] grid-flow-col py-3 px-6 border-b'>
-          <p>#</p>
-          <p>Patient</p>
-          <p>Age</p>
-          <p>Date & Time</p>
-          <p>Doctor</p>
-          <p>Fees</p>
-          <p>Action</p>
-        </div>
-        {appointments.map((item, index) => (
-          <div className='flex flex-wrap justify-between max-sm:gap-2 sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50' key={index}>
-            <p className='max-sm:hidden'>{index+1}</p>
-            <div className='flex items-center gap-2'>
-              <img src={item.userData.image} className='w-8 rounded-full' alt="" /> <p>{item.userData.name}</p>
-            </div>
-            <p className='max-sm:hidden'>{calculateAge(item.userData.dob)}</p>
-            <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
-            <div className='flex items-center gap-2'>
-              <img src={item.docData.image} className='w-8 rounded-full bg-gray-200' alt="" /> <p>{item.docData.name}</p>
-            </div>
-            <p>{currency}{item.amount}</p>
-            {item.cancelled ? <p className='text-red-400 text-xs font-medium'>Cancelled</p> : item.isCompleted ? <p className='text-green-500 text-xs font-medium'>Completed</p> : <img onClick={() => cancelAppointment(item._id)} className='w-10 cursor-pointer' src={assets.cancel_icon} alt="" />}
+    <div className='w-full min-h-full bg-white p-3 sm:p-4'>
+      <div className='space-y-3 sm:space-y-4 animate-fade-in-up'>
+      {/* Header with Stats */}
+      <GlassCard className="p-3 sm:p-4">
+        <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3'>
+          <div className='flex-1 min-w-0'>
+            <h1 className='text-lg sm:text-xl font-bold text-gray-800'>All Appointments</h1>
+            <p className='text-[10px] sm:text-xs text-gray-500 mt-0.5'>Manage and view all patient appointments</p>
           </div>
-        ))}
+          <div className='bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg shadow-lg w-full sm:w-auto'>
+            <p className='text-[9px] sm:text-[10px] font-medium opacity-90'>Total Appointments</p>
+            <p className='text-xl sm:text-2xl font-bold'>{appointments.length}</p>
+          </div>
+        </div>
+      </GlassCard>
+
+      {/* Filters and Export */}
+      <GlassCard className="p-3 sm:p-4">
+        <div className='flex flex-col lg:flex-row gap-2 sm:gap-3 items-stretch lg:items-end'>
+          <div className='flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3'>
+            <div>
+              <label className='block text-xs font-medium text-gray-700 mb-1'>Filter by Date</label>
+              <input
+                type='date'
+                value={filters.date}
+                onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+                className='w-full px-3 py-1.5 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+              />
+            </div>
+            <div>
+              <label className='block text-xs font-medium text-gray-700 mb-1'>Filter by Doctor</label>
+              <select
+                value={filters.doctor}
+                onChange={(e) => setFilters({ ...filters, doctor: e.target.value })}
+                className='w-full px-3 py-1.5 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+              >
+                <option value=''>All Doctors</option>
+                {doctors.map(doctor => (
+                  <option key={doctor._id} value={doctor._id}>{doctor.name}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className='block text-xs font-medium text-gray-700 mb-1'>Filter by Status</label>
+              <select
+                value={filters.status}
+                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                className='w-full px-3 py-1.5 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+              >
+                <option value=''>All Status</option>
+                <option value='active'>Active</option>
+                <option value='completed'>Completed</option>
+                <option value='cancelled'>Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div className='flex flex-col sm:flex-row gap-2 w-full lg:w-auto'>
+            <button
+              onClick={exportToExcel}
+              className='flex-1 sm:flex-none px-3 sm:px-4 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 font-medium flex items-center justify-center gap-1.5 text-xs sm:text-sm'
+            >
+              <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className='hidden sm:inline'>Export Excel</span>
+              <span className='sm:hidden'>Excel</span>
+            </button>
+            <button
+              onClick={exportToPDF}
+              className='flex-1 sm:flex-none px-3 sm:px-4 py-1.5 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 font-medium flex items-center justify-center gap-1.5 text-xs sm:text-sm'
+            >
+              <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span className='hidden sm:inline'>Export PDF</span>
+              <span className='sm:hidden'>PDF</span>
+            </button>
+          </div>
+        </div>
+        {(filters.date || filters.doctor || filters.status) && (
+          <button
+            onClick={() => setFilters({ date: '', doctor: '', status: '' })}
+            className='mt-3 text-xs text-indigo-600 hover:text-indigo-800 font-medium'
+          >
+            Clear Filters
+          </button>
+        )}
+      </GlassCard>
+
+      {/* Clean Block Container */}
+      <div className='bg-gray-50 rounded-lg p-4 sm:p-6'>
+        <div 
+          className='overflow-y-auto'
+          style={{
+            maxHeight: 'calc(100vh - 280px)',
+            scrollBehavior: 'smooth'
+          }}
+        >
+          {filteredAppointments.length === 0 ? (
+            <div className='flex flex-col items-center justify-center py-16 text-gray-400'>
+              <svg className='w-20 h-20 mb-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <p className='text-lg font-medium'>No appointments found</p>
+              <p className='text-sm'>Try adjusting your filters</p>
+            </div>
+          ) : (
+            <div className='space-y-3'>
+              {/* Desktop Table Header - Sticky */}
+              <div 
+                className='hidden lg:grid bg-gray-100 font-semibold text-gray-700 rounded-lg text-sm'
+                style={{
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 5,
+                  backgroundColor: '#f3f4f6',
+                  gridTemplateColumns: '60px 260px 90px 220px 1fr 120px 220px',
+                  padding: '16px 24px',
+                  minHeight: '56px',
+                  alignItems: 'center'
+                }}
+              >
+                <div className='flex items-center justify-center' style={{ padding: 0, margin: 0 }}>#</div>
+                <div className='flex items-center' style={{ padding: 0, margin: 0 }}>Patient</div>
+                <div className='flex items-center justify-center' style={{ padding: 0, margin: 0 }}>Age</div>
+                <div className='flex items-center' style={{ padding: 0, margin: 0 }}>Date & Time</div>
+                <div className='flex items-center' style={{ padding: 0, margin: 0 }}>Doctor</div>
+                <div className='flex items-center justify-center' style={{ padding: 0, margin: 0 }}>Fees</div>
+                <div className='flex items-center justify-center' style={{ padding: 0, margin: 0 }}>Actions</div>
+              </div>
+
+              {/* Appointment Blocks */}
+              {filteredAppointments.map((item, index) => {
+                const patientPhone = item.actualPatient && !item.actualPatient.isSelf 
+                  ? item.actualPatient.phone 
+                  : item.userData.phone;
+                const patientEmail = item.userData.email;
+                const patientName = item.actualPatient && !item.actualPatient.isSelf 
+                  ? item.actualPatient.name 
+                  : item.userData.name;
+
+                return (
+                <div
+                  key={index}
+                    className='hidden lg:block bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200'
+                  >
+                    <div 
+                      className='grid'
+                      style={{
+                        gridTemplateColumns: '60px 260px 90px 220px 1fr 120px 220px',
+                        alignItems: 'center',
+                        padding: '16px 24px',
+                        minHeight: '80px'
+                      }}
+                    >
+                      {/* # Column */}
+                      <div className='flex items-center justify-center h-full' style={{ padding: 0, margin: 0 }}>
+                        <p className='font-medium text-gray-500 text-sm' style={{ margin: 0 }}>{index + 1}</p>
+                      </div>
+
+                      {/* Patient Section */}
+                      <div className='flex items-center gap-3 h-full' style={{ padding: 0, margin: 0 }}>
+                        <img 
+                          src={item.userData.image} 
+                          className='rounded-full border-2 border-indigo-100 flex-shrink-0' 
+                          alt="" 
+                          style={{ width: '40px', height: '40px' }}
+                        />
+                        <div className='flex-1 min-w-0 flex flex-col justify-center' style={{ padding: 0, margin: 0 }}>
+                          <button
+                            onClick={() => {
+                              setSelectedPatient(item);
+                              setShowPatientModal(true);
+                            }}
+                            className='font-semibold text-gray-800 text-sm hover:text-indigo-600 transition-colors text-left block truncate leading-tight'
+                            style={{ margin: 0, padding: 0 }}
+                          >
+                            {patientName}
+                          </button>
+                      {item.actualPatient && !item.actualPatient.isSelf && (
+                            <p className='text-xs text-cyan-600 font-medium truncate leading-tight' style={{ margin: '4px 0 0 0', padding: 0 }}>
+                          {item.actualPatient.relationship} • Booked by: {item.userData.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                      {/* Age Column - Centered */}
+                      <div className='flex items-center justify-center h-full' style={{ padding: 0, margin: 0 }}>
+                        <span className='inline-flex items-center justify-center px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium whitespace-nowrap' style={{ margin: 0 }}>
+                      {item.actualPatient && !item.actualPatient.isSelf 
+                        ? item.actualPatient.age 
+                        : calculateAge(item.userData.dob)}
+                    </span>
+                      </div>
+
+                      {/* Date & Time - Left Aligned */}
+                      <div className='flex items-center h-full' style={{ padding: 0, margin: 0 }}>
+                        <div className='flex flex-col justify-center' style={{ padding: 0, margin: 0 }}>
+                          <p className='font-semibold text-gray-800 text-sm leading-tight' style={{ margin: 0 }}>{slotDateFormat(item.slotDate)}</p>
+                          <p className='text-xs text-gray-500 leading-tight' style={{ margin: '4px 0 0 0' }}>{item.slotTime}</p>
+                        </div>
+                  </div>
+
+                      {/* Doctor Section - Fixed Alignment */}
+                      <div className='flex items-center gap-3 h-full' style={{ padding: 0, margin: 0 }}>
+                        <img 
+                          src={item.docData.image} 
+                          className='rounded-full border-2 border-purple-100 flex-shrink-0' 
+                          alt="" 
+                          style={{ width: '40px', height: '40px' }}
+                        />
+                        <div className='flex-1 min-w-0 flex flex-col justify-center' style={{ padding: 0, margin: 0 }}>
+                          <p className='font-semibold text-gray-800 text-sm truncate leading-tight' style={{ margin: 0 }}>{item.docData.name}</p>
+                          <p className='text-xs text-gray-500 truncate leading-tight' style={{ margin: '4px 0 0 0' }}>{item.docData.speciality}</p>
+                          {helplineMap[item.docData._id] && helplineMap[item.docData._id].status === 'Active' && (
+                            <a 
+                              href={`tel:${helplineMap[item.docData._id].helplineNumber.replace(/\s/g, '')}`}
+                              className='text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 leading-tight'
+                              style={{ margin: '4px 0 0 0', padding: 0 }}
+                            >
+                              <svg className='w-3.5 h-3.5 flex-shrink-0' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                              </svg>
+                              <span className='truncate'>{helplineMap[item.docData._id].helplineNumber}</span>
+                            </a>
+                          )}
+                    </div>
+                  </div>
+
+                      {/* Fees - Centered */}
+                      <div className='flex items-center justify-center h-full' style={{ padding: 0, margin: 0 }}>
+                        <p className='font-bold text-gray-800 text-sm whitespace-nowrap' style={{ margin: 0 }}>
+                          {currency}{item.amount}
+                        </p>
+                      </div>
+
+                      {/* Actions - All on Same Baseline */}
+                      <div className='flex items-center justify-center gap-2 h-full'>
+                        {/* Action Icons Container */}
+                        <div className='flex items-center gap-1.5'>
+                          {/* Call Button */}
+                          <button
+                            onClick={() => {
+                              if (patientPhone) {
+                                window.location.href = `tel:${patientPhone.replace(/\s/g, '')}`;
+                              } else {
+                                toast.error('Patient phone number not available');
+                              }
+                            }}
+                            className='p-1.5 hover:bg-green-50 rounded-lg transition-colors flex items-center justify-center'
+                            title='Call Patient'
+                            disabled={!patientPhone}
+                            style={{ width: '32px', height: '32px' }}
+                          >
+                            <svg className={`w-4 h-4 ${patientPhone ? 'text-green-600' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                          </button>
+
+                          {/* Message Button */}
+                          <button
+                            onClick={() => {
+                              if (patientEmail) {
+                                const subject = encodeURIComponent('MediChain+ Appointment Update');
+                                const body = encodeURIComponent(`Hello ${patientName},\n\nThis is MediChain+ Hospital regarding your appointment on ${item.slotDate} at ${item.slotTime}.\n\nRegards,\nMediChain+ Team`);
+                                window.location.href = `mailto:${patientEmail}?subject=${subject}&body=${body}`;
+                              } else {
+                                toast.error('Patient email not available');
+                              }
+                            }}
+                            className='p-1.5 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center'
+                            title='Message Patient'
+                            disabled={!patientEmail}
+                            style={{ width: '32px', height: '32px' }}
+                          >
+                            <svg className={`w-4 h-4 ${patientEmail ? 'text-blue-600' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                          </button>
+
+                          {/* Mail Button */}
+                          <button
+                            onClick={() => {
+                              if (patientEmail) {
+                                setSelectedAppointmentForEmail(item);
+                                setShowEmailModal(true);
+                              } else {
+                                toast.error('Patient email not available');
+                              }
+                            }}
+                            className='p-1.5 hover:bg-purple-50 rounded-lg transition-colors flex items-center justify-center'
+                            title='Send Email'
+                            disabled={!patientEmail}
+                            style={{ width: '32px', height: '32px' }}
+                          >
+                            <svg className={`w-4 h-4 ${patientEmail ? 'text-purple-600' : 'text-gray-300'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Status Badge - Same Baseline */}
+                    {item.cancelled ? (
+                          <span className='inline-flex items-center justify-center px-2.5 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full whitespace-nowrap'>
+                        Cancelled
+                      </span>
+                    ) : item.isCompleted ? (
+                          <span className='inline-flex items-center justify-center gap-1 px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full whitespace-nowrap'>
+                            <svg className='w-3.5 h-3.5' fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Completed
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => cancelAppointment(item._id)}
+                            className='p-1.5 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center'
+                        title='Cancel Appointment'
+                            style={{ width: '32px', height: '32px' }}
+                      >
+                            <img className='w-5 h-5' src={assets.cancel_icon} alt="Cancel" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Mobile Cards */}
+          <div className='lg:hidden space-y-3 sm:space-y-4 p-4'>
+            {filteredAppointments.map((item, index) => {
+              const patientPhone = item.actualPatient && !item.actualPatient.isSelf 
+                ? item.actualPatient.phone 
+                : item.userData.phone;
+              const patientEmail = item.userData.email;
+              const patientName = item.actualPatient && !item.actualPatient.isSelf 
+                ? item.actualPatient.name 
+                : item.userData.name;
+
+              return (
+              <div key={index} className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
+                    <div className='flex items-start gap-3 sm:gap-4'>
+                      <img src={item.userData.image} className='w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-indigo-100 flex-shrink-0' alt="" />
+                      <div className='flex-1 min-w-0'>
+                      <button
+                        onClick={() => {
+                          setSelectedPatient(item);
+                          setShowPatientModal(true);
+                        }}
+                        className='font-semibold text-sm sm:text-base text-gray-800 hover:text-indigo-600 transition-colors text-left truncate block w-full'
+                      >
+                        {patientName}
+                      </button>
+                        {item.actualPatient && !item.actualPatient.isSelf && (
+                          <p className='text-[10px] sm:text-xs text-cyan-600 font-medium mt-1 break-words'>
+                            {item.actualPatient.relationship} • Booked by: {item.userData.name}
+                          </p>
+                        )}
+                        <p className='text-[10px] sm:text-xs text-gray-500 mt-1'>{slotDateFormat(item.slotDate)} at {item.slotTime}</p>
+                        <div className='flex items-center gap-2 mt-2'>
+                          <img src={item.docData.image} className='w-7 h-7 sm:w-8 sm:h-8 rounded-full flex-shrink-0' alt="" />
+                          <div className='min-w-0 flex-1'>
+                            <p className='text-xs sm:text-sm font-medium text-gray-700 truncate'>{item.docData.name}</p>
+                            <p className='text-[10px] sm:text-xs text-gray-500 truncate'>{item.docData.speciality}</p>
+                          {helplineMap[item.docData._id] && helplineMap[item.docData._id].status === 'Active' && (
+                            <a 
+                              href={`tel:${helplineMap[item.docData._id].helplineNumber.replace(/\s/g, '')}`}
+                              className='text-[10px] text-blue-600 hover:text-blue-700 flex items-center gap-1 mt-0.5'
+                            >
+                              <svg className='w-3 h-3' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                              </svg>
+                              {helplineMap[item.docData._id].helplineNumber}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Action Buttons for Mobile */}
+                      <div className='grid grid-cols-3 gap-2 mt-3'>
+                        <button
+                          onClick={() => {
+                            if (patientPhone) {
+                              window.location.href = `tel:${patientPhone.replace(/\s/g, '')}`;
+                            } else {
+                              toast.error('Patient phone number not available');
+                            }
+                          }}
+                          disabled={!patientPhone}
+                          className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 sm:gap-1.5 transition-colors ${
+                            patientPhone 
+                              ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                          </svg>
+                          <span className='hidden sm:inline'>Call</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (patientEmail) {
+                              const subject = encodeURIComponent('MediChain+ Appointment Update');
+                              const body = encodeURIComponent(`Hello ${patientName},\n\nThis is MediChain+ Hospital regarding your appointment on ${item.slotDate} at ${item.slotTime}.\n\nRegards,\nMediChain+ Team`);
+                              window.location.href = `mailto:${patientEmail}?subject=${subject}&body=${body}`;
+                            } else {
+                              toast.error('Patient email not available');
+                            }
+                          }}
+                          disabled={!patientEmail}
+                          className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 sm:gap-1.5 transition-colors ${
+                            patientEmail 
+                              ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
+                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                          <span className='hidden sm:inline'>Message</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (patientEmail) {
+                              setSelectedAppointmentForEmail(item);
+                              setShowEmailModal(true);
+                            } else {
+                              toast.error('Patient email not available');
+                            }
+                          }}
+                          disabled={!patientEmail}
+                          className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 sm:gap-1.5 transition-colors ${
+                            patientEmail 
+                              ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
+                              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          <span className='hidden sm:inline'>Mail</span>
+                        </button>
+                      </div>
+
+                        <div className='flex items-center justify-between mt-3'>
+                          <span className='text-base sm:text-lg font-bold text-indigo-600'>{currency}{item.amount}</span>
+                          {item.cancelled ? (
+                            <span className='px-2 sm:px-3 py-1 bg-red-100 text-red-600 text-[10px] sm:text-xs font-semibold rounded-lg'>Cancelled</span>
+                          ) : item.isCompleted ? (
+                            <span className='px-2 sm:px-3 py-1 bg-green-100 text-green-600 text-[10px] sm:text-xs font-semibold rounded-lg'>Completed</span>
+                          ) : (
+                            <button
+                              onClick={() => cancelAppointment(item._id)}
+                              className='p-1.5 sm:p-2 hover:bg-red-50 rounded-lg transition-colors'
+                            >
+                              <img className='w-5 h-5 sm:w-6 sm:h-6' src={assets.cancel_icon} alt="Cancel" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
+      {/* Patient Details Modal */}
+      {selectedPatient && (
+        <PatientDetailsModal
+          isOpen={showPatientModal}
+          onClose={() => {
+            setShowPatientModal(false);
+            setSelectedPatient(null);
+          }}
+          appointment={selectedPatient}
+          backendUrl={backendUrl}
+          aToken={aToken}
+        />
+      )}
+
+      {/* Email Modal */}
+      {selectedAppointmentForEmail && (
+        <EmailModal
+          isOpen={showEmailModal}
+          onClose={() => {
+            setShowEmailModal(false);
+            setSelectedAppointmentForEmail(null);
+          }}
+          patientEmail={selectedAppointmentForEmail.userData.email}
+          patientName={
+            selectedAppointmentForEmail.actualPatient && !selectedAppointmentForEmail.actualPatient.isSelf
+              ? selectedAppointmentForEmail.actualPatient.name
+              : selectedAppointmentForEmail.userData.name
+          }
+          appointment={selectedAppointmentForEmail}
+          backendUrl={backendUrl}
+          aToken={aToken}
+        />
+      )}
+      </div>
     </div>
   )
 }

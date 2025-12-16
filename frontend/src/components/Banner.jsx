@@ -55,7 +55,7 @@ const Banner = () => {
                         transform: `translate(${mousePosition.x * 0.3}px, ${mousePosition.y * 0.3}px)`
                     }}
                 >
-                    <div className='text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6'>
+                    <div className='text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6'>
                         <h1 className='mb-3 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent drop-shadow-md'>
                             Book Appointment
                         </h1>
@@ -64,11 +64,11 @@ const Banner = () => {
                         </h2>
                     </div>
                     
-                    <p className='text-blue-100 text-lg md:text-xl max-w-xl leading-relaxed mb-6'>
+                    <p className='text-blue-100 text-base md:text-lg max-w-xl leading-relaxed mb-6'>
                         Connect with verified healthcare professionals through our secure blockchain platform.
                     </p>
                     
-                    <div className='flex items-center gap-4 mb-8 flex-wrap'>
+                    <div className='flex items-center gap-4 flex-wrap'>
                         {['HIPAA Compliant', 'Instant Booking', '24/7 Support'].map((feature, index) => (
                             <div key={index} className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20">
                                 <span className="text-green-300 mr-2">✓</span>
@@ -76,23 +76,6 @@ const Banner = () => {
                             </div>
                         ))}
                     </div>
-                    
-                    <button 
-                        onClick={() => { navigate('/login'); scrollTo(0, 0) }} 
-                        className='bg-white text-blue-700 font-semibold text-lg px-8 py-4 rounded-full mt-4 hover:scale-105 transition-all duration-500 shadow-2xl hover:shadow-blue-200/50 relative overflow-hidden group-btn flex items-center'
-                    >
-                        <span className='relative z-10'>
-                            Get Started Now
-                        </span>
-                        <svg className="ml-3 w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                        
-                        {/* Button shine effect */}
-                        <div className="absolute inset-0 overflow-hidden">
-                            <div className="absolute -inset-full top-0 block h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent to-white/40 group-hover:animate-shine"></div>
-                        </div>
-                    </button>
                 </div>
 
                 {/* ------- Right Image (Even Larger Size) ------- */}
