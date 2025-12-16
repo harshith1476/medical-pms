@@ -3,7 +3,7 @@ services:
     name: medichain-backend
     env: node
     rootDir: backend
-    buildCommand: npm install
+    buildCommand: npm ci --prefer-offline --no-audit
     startCommand: npm start
     envVars:
       - key: NODE_ENV
