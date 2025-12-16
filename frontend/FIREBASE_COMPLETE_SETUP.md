@@ -11,13 +11,13 @@
 - **Client Secret**: `YOUR_CLIENT_SECRET_HERE` ⚠️ **SAVED**
 
 ### Firebase Configuration Values
-- **API Key**: `AIzaSyBfmG42V_737A9M0dWvn7CfPMSvK_pFqa0`
-- **Auth Domain**: `pms-01-6369b.firebaseapp.com`
-- **Project ID**: `pms-01-6369b`
-- **Storage Bucket**: `pms-01-6369b.firebasestorage.app`
-- **Messaging Sender ID**: `233212765878`
-- **App ID**: `1:233212765878:web:3dbc6fcf0a3c2242c6e817`
-- **Measurement ID**: `G-6MJ3S87MJP`
+- **API Key**: `YOUR_FIREBASE_API_KEY`
+- **Auth Domain**: `your-project.firebaseapp.com`
+- **Project ID**: `your-project-id`
+- **Storage Bucket**: `your-project.firebasestorage.app`
+- **Messaging Sender ID**: `YOUR_SENDER_ID`
+- **App ID**: `YOUR_APP_ID`
+- **Measurement ID**: `YOUR_MEASUREMENT_ID`
 
 ## 📝 Step-by-Step Setup
 
