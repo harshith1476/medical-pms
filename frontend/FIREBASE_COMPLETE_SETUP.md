@@ -11,13 +11,13 @@
 - **Client Secret**: `YOUR_CLIENT_SECRET_HERE` ⚠️ **SAVED**
 
 ### Firebase Configuration Values
-- **API Key**: `YOUR_FIREBASE_API_KEY`
-- **Auth Domain**: `your-project.firebaseapp.com`
-- **Project ID**: `your-project-id`
-- **Storage Bucket**: `your-project.firebasestorage.app`
+- **API Key**: `AIzaSyBfmG42V_737A9M0dWvn7CfPMSvK_pFqa0`
+- **Auth Domain**: `pms-01-6369b.firebaseapp.com`
+- **Project ID**: `pms-01-6369b`
+- **Storage Bucket**: `pms-01-6369b.firebasestorage.app`
 - **Messaging Sender ID**: `YOUR_SENDER_ID`
 - **App ID**: `YOUR_APP_ID`
-- **Measurement ID**: `YOUR_MEASUREMENT_ID`
+- **Measurement ID**: `G-6MJ3S87MJP`
 
 ## 📝 Step-by-Step Setup
 
@@ -28,12 +28,12 @@ Create `frontend/.env` file with these exact values:
 ```env
 # Firebase Configuration
 VITE_FIREBASE_API_KEY=YOUR_FIREBASE_API_KEY
-VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your-project-id
-VITE_FIREBASE_STORAGE_BUCKET=your-project.firebasestorage.app
+VITE_FIREBASE_AUTH_DOMAIN=pms-01-6369b.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=pms-01-6369b
+VITE_FIREBASE_STORAGE_BUCKET=pms-01-6369b.firebasestorage.app
 VITE_FIREBASE_MESSAGING_SENDER_ID=YOUR_SENDER_ID
 VITE_FIREBASE_APP_ID=YOUR_APP_ID
-VITE_FIREBASE_MEASUREMENT_ID=YOUR_MEASUREMENT_ID
+VITE_FIREBASE_MEASUREMENT_ID=G-6MJ3S87MJP
 
 # Backend URL (if you have one)
 VITE_BACKEND_URL=http://localhost:4000

@@ -4,13 +4,13 @@ import { getAuth, GoogleAuthProvider, OAuthProvider, FacebookAuthProvider } from
 // Firebase configuration
 // These values are used from environment variables or fallback to defaults
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBfmG42V_737A9M0dWvn7CfPMSvK_pFqa0",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "pms-01-6369b.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "pms-01-6369b",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "pms-01-6369b.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "233212765878",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:233212765878:web:3dbc6fcf0a3c2242c6e817",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-6MJ3S87MJP"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ""
 }
 
 // Validate Firebase configuration

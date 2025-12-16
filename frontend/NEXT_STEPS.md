@@ -57,12 +57,12 @@
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "pms-01-6369b.firebaseapp.com",
-  projectId: "pms-01-6369b",
-  storageBucket: "pms-01-6369b.firebasestorage.app",
-  messagingSenderId: "233212765878",
-  appId: "1:233212765878:web:3dbc6fcf0a3c2242c6e817",
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.firebasestorage.app",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
   measurementId: "G-6MJ3S87MJP"
 }
 ```
