@@ -47,7 +47,7 @@ const DoctorProfile = () => {
     }, [dToken])
 
     return profileData && (
-        <div className='w-full min-h-full bg-white p-4 sm:p-4 lg:p-6 animate-fade-in-up mobile-safe-area'>
+        <div className='w-full bg-white p-4 sm:p-4 lg:p-6 animate-fade-in-up mobile-safe-area pb-6'>
             <div className='flex flex-col lg:flex-row gap-4 lg:gap-6'>
                 {/* Profile Picture Section */}
                 <div className='w-full lg:w-72 flex-shrink-0'>

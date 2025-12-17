@@ -18,7 +18,7 @@ const DoctorAppointments = () => {
   }, [dToken])
 
   return (
-    <div className='w-full min-h-full bg-white p-4 sm:p-4 animate-fade-in-up mobile-safe-area'>
+    <div className='w-full bg-white p-4 sm:p-4 animate-fade-in-up mobile-safe-area pb-6'>
 
       <div className='mb-3 sm:mb-4'>
         <h1 className='text-lg sm:text-xl font-bold text-gray-800 mb-1'>All Appointments</h1>
@@ -26,11 +26,9 @@ const DoctorAppointments = () => {
       </div>
 
       <div className='bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 overflow-hidden'>
-        {/* Table Body with Scroll */}
-        <div 
-          className='overflow-y-auto overflow-x-auto'
+        {/* Table Body */}
+        <div className='overflow-x-auto lg:overflow-y-auto lg:max-h-[calc(100vh-300px)]'
           style={{
-            maxHeight: 'calc(100vh - 300px)',
             scrollBehavior: 'smooth'
           }}
         >

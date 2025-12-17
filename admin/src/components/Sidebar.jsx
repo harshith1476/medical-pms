@@ -227,11 +227,12 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Button - Fixed in header area */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className='fixed top-4 left-4 z-50 lg:hidden bg-white/90 backdrop-blur-xl p-3 rounded-xl shadow-lg border border-white/40 hover:shadow-xl transition-all'
+        className='fixed top-3 left-3 z-[1001] lg:hidden bg-white/95 backdrop-blur-xl p-2.5 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-all'
         aria-label="Toggle menu"
+        style={{ height: '40px', width: '40px' }}
       >
         <svg className='w-6 h-6 text-gray-700' fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {isMobileMenuOpen ? (

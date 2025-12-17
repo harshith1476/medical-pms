@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
+import ScrollToTop from './components/ScrollToTop'
 import LiveTips from './components/LiveTips'
 import AnimatedQuotes from './components/AnimatedQuotes'
 import BackgroundFX from './components/BackgroundFX'
@@ -28,10 +29,10 @@ const App = () => {
   const location = useLocation()
 
   return dToken || aToken ? (
-    <div className='relative w-full min-h-screen medical-bg'>
+    <div className='relative w-full h-screen medical-bg flex flex-col overflow-hidden'>
       <ToastContainer />
       <Navbar />
-      <div key={location.pathname} className='flex items-start relative z-10 animate-route-in min-h-screen'>
+      <div key={location.pathname} className='flex items-start relative z-10 animate-route-in flex-1 min-h-0 overflow-hidden'>
         <Sidebar />
         <div className='flex-1 min-w-0 w-full pt-16 lg:pt-0 overflow-y-auto overflow-x-hidden main-content-area bg-white'>
           <Routes>
@@ -49,6 +50,7 @@ const App = () => {
           </Routes>
         </div>
       </div>
+      <ScrollToTop />
       <style>{`@keyframes pan {0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
       @keyframes routeIn {0%{opacity:0; transform: translateY(12px) scale(.98)} 100%{opacity:1; transform: translateY(0) scale(1)}}
       .animate-route-in{animation: routeIn .5s ease forwards}

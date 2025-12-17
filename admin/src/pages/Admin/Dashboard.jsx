@@ -132,7 +132,7 @@ const Dashboard = () => {
 
   if (!dashData) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading dashboard...</p>
@@ -142,7 +142,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className='w-full min-h-full bg-white p-4 sm:p-4 mobile-safe-area'>
+    <div className='w-full bg-white p-4 sm:p-4 mobile-safe-area pb-6'>
       <div className='space-y-3 sm:space-y-4 animate-fade-in-up'>
       {/* Live Clock Widget */}
       <GlassCard className="p-3 sm:p-4">
@@ -289,11 +289,7 @@ const Dashboard = () => {
         </div>
 
         <div 
-          className='space-y-2 overflow-y-auto pr-2'
-          style={{
-            maxHeight: '400px',
-            scrollBehavior: 'smooth'
-          }}
+          className='space-y-2 pr-2'
         >
           {dashData.latestAppointments?.slice(0, 10).map((item, index) => (
             <div

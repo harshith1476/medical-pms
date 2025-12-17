@@ -92,8 +92,8 @@ const AddDoctor = () => {
     }
 
     return (
-        <div className='w-full min-h-full bg-white flex flex-col lg:flex-row mobile-safe-area'>
-            <div className='flex flex-col lg:flex-row flex-1 gap-0 items-stretch min-h-full'>
+        <div className='w-full bg-white flex flex-col lg:flex-row mobile-safe-area pb-6'>
+            <div className='flex flex-col lg:flex-row flex-1 gap-0 items-stretch'>
                 {/* Main Form Container */}
                 <div className='flex-1 w-full p-4 sm:p-4 lg:p-4'>
                     <h2 className='text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2'>

@@ -100,7 +100,7 @@ const JobApplications = () => {
   }
 
   return (
-    <div className='w-full min-h-[calc(100vh-64px)] bg-white p-4 sm:p-6 mobile-safe-area'>
+    <div className='w-full bg-white p-4 sm:p-6 mobile-safe-area pb-6'>
       <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6'>
         <div>
           <h2 className='text-xl font-semibold text-gray-800'>Job Applications</h2>

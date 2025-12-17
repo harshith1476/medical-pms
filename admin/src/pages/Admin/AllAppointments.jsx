@@ -209,7 +209,7 @@ const AllAppointments = () => {
   }
 
   return (
-    <div className='w-full min-h-full bg-white p-4 sm:p-4 mobile-safe-area'>
+    <div className='w-full bg-white p-4 sm:p-4 mobile-safe-area pb-6'>
       <div className='space-y-3 sm:space-y-4 animate-fade-in-up'>
       {/* Header with Stats */}
       <GlassCard className="p-3 sm:p-4">
@@ -300,13 +300,7 @@ const AllAppointments = () => {
 
       {/* Clean Block Container */}
       <div className='bg-gray-50 rounded-lg p-4 sm:p-6'>
-        <div 
-          className='overflow-y-auto'
-          style={{
-            maxHeight: 'calc(100vh - 280px)',
-            scrollBehavior: 'smooth'
-          }}
-        >
+        <div>
           {filteredAppointments.length === 0 ? (
             <div className='flex flex-col items-center justify-center py-16 text-gray-400'>
               <svg className='w-20 h-20 mb-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
