@@ -184,7 +184,7 @@ const SpecialtyHelpline = () => {
   }
 
   return (
-    <div className='p-4 sm:p-6 lg:p-8'>
+    <div className='p-4 sm:p-6 lg:p-8 mobile-safe-area'>
       {/* Page Header */}
       <div className='mb-6'>
         <h1 className='text-2xl sm:text-3xl font-semibold text-gray-800 mb-2'>
@@ -232,73 +232,134 @@ const SpecialtyHelpline = () => {
           <p className='text-gray-500'>No specialty helplines found. Add one to get started.</p>
         </GlassCard>
       ) : (
-        <GlassCard className='overflow-x-auto'>
-          <table className='w-full'>
-            <thead>
-              <tr className='border-b border-gray-200'>
-                <th className='text-left py-3 px-4 font-semibold text-gray-700 text-sm'>Specialty</th>
-                <th className='text-left py-3 px-4 font-semibold text-gray-700 text-sm'>Helpline Number</th>
-                <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Availability</th>
-                <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Status</th>
-                <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Last Updated</th>
-                <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {specialties.map((specialty) => (
-                <tr key={specialty._id} className='border-b border-gray-100 hover:bg-gray-50'>
-                  <td className='py-3 px-4 text-sm text-gray-800 font-medium'>{specialty.specialtyName}</td>
-                  <td className='py-3 px-4 text-sm text-gray-700'>
-                    <a 
-                      href={`tel:${specialty.helplineNumber.replace(/\s/g, '')}`}
-                      className='text-blue-600 hover:text-blue-700 flex items-center gap-1'
-                    >
-                      <svg className='w-4 h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      {specialty.helplineNumber}
-                    </a>
-                  </td>
-                  <td className='py-3 px-4 text-sm text-gray-600 text-center'>{specialty.availability}</td>
-                  <td className='py-3 px-4 text-center'>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+        <>
+          {/* Desktop Table */}
+          <GlassCard className='hidden lg:block overflow-x-auto'>
+            <table className='w-full'>
+              <thead>
+                <tr className='border-b border-gray-200'>
+                  <th className='text-left py-3 px-4 font-semibold text-gray-700 text-sm'>Specialty</th>
+                  <th className='text-left py-3 px-4 font-semibold text-gray-700 text-sm'>Helpline Number</th>
+                  <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Availability</th>
+                  <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Status</th>
+                  <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Last Updated</th>
+                  <th className='text-center py-3 px-4 font-semibold text-gray-700 text-sm'>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {specialties.map((specialty) => (
+                  <tr key={specialty._id} className='border-b border-gray-100 hover:bg-gray-50'>
+                    <td className='py-3 px-4 text-sm text-gray-800 font-medium'>{specialty.specialtyName}</td>
+                    <td className='py-3 px-4 text-sm text-gray-700'>
+                      <a 
+                        href={`tel:${specialty.helplineNumber.replace(/\s/g, '')}`}
+                        className='text-blue-600 hover:text-blue-700 flex items-center gap-1'
+                      >
+                        <svg className='w-4 h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        {specialty.helplineNumber}
+                      </a>
+                    </td>
+                    <td className='py-3 px-4 text-sm text-gray-600 text-center'>{specialty.availability}</td>
+                    <td className='py-3 px-4 text-center'>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        specialty.status === 'Active' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {specialty.status}
+                      </span>
+                    </td>
+                    <td className='py-3 px-4 text-sm text-gray-500 text-center'>
+                      {new Date(specialty.lastUpdated).toLocaleDateString()}
+                    </td>
+                    <td className='py-3 px-4 text-center'>
+                      <div className='flex items-center justify-center gap-2'>
+                        <button
+                          onClick={() => handleEdit(specialty)}
+                          className='p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors'
+                          title='Edit'
+                        >
+                          <svg className='w-4 h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(specialty._id)}
+                          className='p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors'
+                          title='Delete'
+                        >
+                          <svg className='w-4 h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </GlassCard>
+
+          {/* Mobile Cards */}
+          <div className='lg:hidden space-y-3'>
+            {specialties.map((specialty) => (
+              <GlassCard key={specialty._id} className='p-4'>
+                <div className='space-y-3'>
+                  <div className='flex items-start justify-between'>
+                    <div className='flex-1'>
+                      <h3 className='font-semibold text-gray-800 text-base mb-1'>{specialty.specialtyName}</h3>
+                      <a 
+                        href={`tel:${specialty.helplineNumber.replace(/\s/g, '')}`}
+                        className='text-blue-600 hover:text-blue-700 flex items-center gap-2 text-sm font-medium'
+                      >
+                        <svg className='w-5 h-5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                        {specialty.helplineNumber}
+                      </a>
+                    </div>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                       specialty.status === 'Active' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-gray-100 text-gray-700'
                     }`}>
                       {specialty.status}
                     </span>
-                  </td>
-                  <td className='py-3 px-4 text-sm text-gray-500 text-center'>
-                    {new Date(specialty.lastUpdated).toLocaleDateString()}
-                  </td>
-                  <td className='py-3 px-4 text-center'>
-                    <div className='flex items-center justify-center gap-2'>
+                  </div>
+                  
+                  <div className='flex items-center justify-between pt-2 border-t border-gray-200'>
+                    <div className='text-xs text-gray-500'>
+                      <p>Availability: {specialty.availability}</p>
+                      <p className='mt-1'>Updated: {new Date(specialty.lastUpdated).toLocaleDateString()}</p>
+                    </div>
+                    <div className='flex items-center gap-2'>
                       <button
                         onClick={() => handleEdit(specialty)}
-                        className='p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors'
+                        className='p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors'
                         title='Edit'
                       >
-                        <svg className='w-4 h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className='w-5 h-5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       </button>
                       <button
                         onClick={() => handleDelete(specialty._id)}
-                        className='p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors'
+                        className='p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors'
                         title='Delete'
                       >
-                        <svg className='w-4 h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className='w-5 h-5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                       </button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </GlassCard>
+                  </div>
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        </>
       )}
 
       {/* Add/Edit Modal */}

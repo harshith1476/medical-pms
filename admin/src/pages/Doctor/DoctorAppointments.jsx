@@ -18,7 +18,7 @@ const DoctorAppointments = () => {
   }, [dToken])
 
   return (
-    <div className='w-full min-h-full bg-white p-3 sm:p-4 animate-fade-in-up'>
+    <div className='w-full min-h-full bg-white p-4 sm:p-4 animate-fade-in-up mobile-safe-area'>
 
       <div className='mb-3 sm:mb-4'>
         <h1 className='text-lg sm:text-xl font-bold text-gray-800 mb-1'>All Appointments</h1>
@@ -64,29 +64,38 @@ const DoctorAppointments = () => {
           ) : (
             <>
             {/* Mobile Cards */}
-            <div className='sm:hidden space-y-3 p-3'>
+            <div className='sm:hidden space-y-3 p-0'>
               {appointments.map((item, index) => (
-                <div key={index} className='bg-white rounded-xl p-3 border border-gray-200 shadow-sm'>
+                <div key={index} className='bg-white rounded-xl p-4 border border-gray-200 shadow-sm w-full'>
                     <div className='flex items-start gap-3'>
-                      <img src={item.userData.image} className='w-10 h-10 rounded-full object-cover ring-2 ring-blue-200 flex-shrink-0' alt="" />
+                      <img src={item.userData.image} className='w-12 h-12 rounded-full object-cover ring-2 ring-blue-200 flex-shrink-0' alt="" />
                       <div className='flex-1 min-w-0'>
-                        <p className='font-semibold text-sm text-gray-800 truncate'>
+                        <p className='font-semibold text-sm text-gray-800'>
                           {item.actualPatient && !item.actualPatient.isSelf ? item.actualPatient.name : item.userData.name}
                         </p>
                         {item.actualPatient && !item.actualPatient.isSelf && (
-                          <p className='text-[10px] text-cyan-600 mt-0.5'>{item.actualPatient.relationship}</p>
+                          <p className='text-xs text-cyan-600 mt-0.5 font-medium'>{item.actualPatient.relationship}</p>
                         )}
-                        <p className='text-[10px] text-gray-500 mt-1'>{slotDateFormat(item.slotDate)} • {item.slotTime}</p>
-                        <div className='flex items-center justify-between mt-2'>
-                          <span className='text-sm font-bold text-blue-600'>{currency}{item.amount}</span>
+                        <p className='text-xs text-gray-500 mt-1'>{slotDateFormat(item.slotDate)} • {item.slotTime}</p>
+                        <div className='flex items-center justify-between mt-3'>
+                          <span className='text-base font-bold text-blue-600'>{currency}{item.amount}</span>
                           {item.cancelled ? (
-                            <span className='px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-semibold rounded'>Cancelled</span>
+                            <span className='px-3 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full badge-cancelled'>Cancelled</span>
                           ) : item.isCompleted ? (
-                            <span className='px-2 py-0.5 bg-green-100 text-green-600 text-[10px] font-semibold rounded'>Completed</span>
+                            <span className='px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full badge-completed'>Completed</span>
                           ) : (
-                            <button onClick={() => cancelAppointment(item._id)} className='p-1.5 bg-red-50 rounded'>
-                              <img className='w-4 h-4' src={assets.cancel_icon} alt="Cancel" />
-                            </button>
+                            <div className='flex gap-2'>
+                              <button onClick={() => cancelAppointment(item._id)} className='p-2 bg-red-50 hover:bg-red-100 rounded-lg transition-colors'>
+                                <svg className='w-5 h-5 text-red-600' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                              <button onClick={() => completeAppointment(item._id)} className='p-2 bg-green-50 hover:bg-green-100 rounded-lg transition-colors'>
+                                <svg className='w-5 h-5 text-green-600' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </button>
+                            </div>
                           )}
                         </div>
                       </div>

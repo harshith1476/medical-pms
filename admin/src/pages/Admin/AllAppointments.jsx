@@ -209,7 +209,7 @@ const AllAppointments = () => {
   }
 
   return (
-    <div className='w-full min-h-full bg-white p-3 sm:p-4'>
+    <div className='w-full min-h-full bg-white p-4 sm:p-4 mobile-safe-area'>
       <div className='space-y-3 sm:space-y-4 animate-fade-in-up'>
       {/* Header with Stats */}
       <GlassCard className="p-3 sm:p-4">
@@ -542,7 +542,7 @@ const AllAppointments = () => {
           )}
 
           {/* Mobile Cards */}
-          <div className='lg:hidden space-y-3 sm:space-y-4 p-4'>
+          <div className='lg:hidden space-y-3 sm:space-y-4 p-0'>
             {filteredAppointments.map((item, index) => {
               const patientPhone = item.actualPatient && !item.actualPatient.isSelf 
                 ? item.actualPatient.phone 
@@ -553,7 +553,7 @@ const AllAppointments = () => {
                 : item.userData.name;
 
               return (
-              <div key={index} className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 shadow-sm">
+              <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm w-full">
                     <div className='flex items-start gap-3 sm:gap-4'>
                       <img src={item.userData.image} className='w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-indigo-100 flex-shrink-0' alt="" />
                       <div className='flex-1 min-w-0'>

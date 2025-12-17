@@ -34,15 +34,16 @@ html, body {
     width: 100%;
     min-width: 320px;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
     margin: 0;
     padding: 0;
-    height: 100vh;
+    height: 100%;
 }
 
 #root {
     width: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Smooth scrolling for all scrollable containers */
@@ -54,13 +55,29 @@ html, body {
 .main-content-area {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    min-height: calc(100vh - 64px);
+    min-height: calc(100dvh - 64px);
+    padding-bottom: 96px; /* Space for mobile fixed buttons */
+}
+
+/* Mobile: Reduce padding for fixed buttons */
+@media (max-width: 767px) {
+    .main-content-area {
+        padding-bottom: 120px; /* Extra space for mobile fixed buttons */
+    }
 }
 
 /* Ensure all page containers extend to bottom at same level */
 .main-content-area > * {
     width: 100%;
-    min-height: calc(100vh - 64px);
+    min-height: calc(100dvh - 64px);
+}
+
+/* Mobile: Full width containers */
+@media (max-width: 767px) {
+    .main-content-area > * {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
 }
 
 /* ===== Glassmorphism Effects ===== */
@@ -329,4 +346,131 @@ html, body {
 
 @media (min-width: 2560px){
   :root { font-size: 20px; }
+}
+
+/* ===== MOBILE UI FIXES ===== */
+
+/* Mobile Fixed Action Buttons */
+.mobile-fixed-actions {
+    position: fixed;
+    left: 8px;
+    bottom: 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 9999;
+}
+
+@media (min-width: 768px) {
+    .mobile-fixed-actions {
+        display: none;
+    }
+}
+
+.mobile-action-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.mobile-action-btn:active {
+    transform: scale(0.95);
+}
+
+.mobile-action-btn.call {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.mobile-action-btn.message {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+
+.mobile-action-btn.mail {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+}
+
+.mobile-action-btn:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Mobile Card Styles */
+@media (max-width: 767px) {
+    .card {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 14px;
+        border-radius: 14px;
+        box-sizing: border-box;
+    }
+    
+    /* Force single column on mobile */
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Full width tables become cards */
+    table, .table-container {
+        display: none;
+    }
+    
+    /* Prevent horizontal scroll */
+    * {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Consistent mobile padding */
+    .mobile-padding {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* Status Badge Colors */
+.badge-completed {
+    background-color: #10b981;
+    color: white;
+}
+
+.badge-cancelled {
+    background-color: #ef4444;
+    color: white;
+}
+
+.badge-pending {
+    background-color: #f59e0b;
+    color: white;
+}
+
+/* Mobile Header Fix */
+@media (max-width: 767px) {
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Mobile Safe Areas */
+@supports (padding: max(0px)) {
+    .mobile-safe-area {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: max(96px, env(safe-area-inset-bottom));
+    }
 }

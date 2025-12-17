@@ -100,24 +100,24 @@ const JobApplications = () => {
   }
 
   return (
-    <div className='w-full min-h-[calc(100vh-64px)] bg-white p-6'>
+    <div className='w-full min-h-[calc(100vh-64px)] bg-white p-4 sm:p-6 mobile-safe-area'>
       <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6'>
         <div>
           <h2 className='text-xl font-semibold text-gray-800'>Job Applications</h2>
           <p className='text-sm text-gray-500'>Review each applicant’s details and manage their status.</p>
         </div>
 
-        <form onSubmit={handleSearch} className='flex gap-2'>
+        <form onSubmit={handleSearch} className='flex flex-col sm:flex-row gap-2 w-full sm:w-auto'>
           <input
             type='text'
             placeholder='Search by name, role, city, email...'
-            className='border rounded-lg px-3 py-2 text-sm w-56 md:w-72'
+            className='border rounded-lg px-3 py-2 text-sm w-full sm:w-56 md:w-72'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <button
             type='submit'
-            className='px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium'
+            className='px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium whitespace-nowrap'
           >
             Search
           </button>
@@ -137,7 +137,7 @@ const JobApplications = () => {
           {applications.map(app => (
             <div
               key={app._id}
-              className='bg-white rounded-xl shadow-sm border border-gray-100 p-5 md:p-6 flex flex-col gap-4'
+              className='bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 md:p-6 flex flex-col gap-4 w-full'
             >
               <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-3'>
                 <div>

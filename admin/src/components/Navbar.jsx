@@ -79,7 +79,7 @@ const Navbar = () => {
 
   return (
     <div 
-      className={`sticky top-0 z-20 flex justify-between items-center px-3 sm:px-4 lg:px-8 py-2.5 border-b border-white/30 transition-all duration-300 ${
+      className={`sticky top-0 z-20 flex justify-between items-center px-4 sm:px-4 lg:px-8 py-2.5 border-b border-white/30 transition-all duration-300 header ${
         scrolled 
           ? 'bg-white/95 shadow-lg' 
           : 'bg-white/90 shadow-sm'

@@ -47,7 +47,7 @@ const DoctorDashboard = () => {
   }
 
   return dashData && (
-    <div className='w-full p-6 animate-fade-in-up'>
+    <div className='w-full p-4 sm:p-6 animate-fade-in-up mobile-safe-area'>
 
       {/* Enhanced Clock and Date Widget */}
       <div className='flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6'>
@@ -96,7 +96,7 @@ const DoctorDashboard = () => {
             <div className='flex-1 min-w-0'>
               <p className='text-gray-500 text-xs sm:text-sm font-medium mb-1'>Total Earnings</p>
               <p className='text-xl sm:text-2xl font-bold text-gray-800'>
-                <AnimatedCounter value={dashData.earnings} prefix={currency + ' '} duration={2000} />
+                <AnimatedCounter value={dashData.earnings ?? 0} prefix={currency + ' '} duration={2000} />
               </p>
             </div>
           </div>

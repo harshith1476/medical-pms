@@ -31,9 +31,9 @@ const App = () => {
     <div className='relative w-full min-h-screen medical-bg'>
       <ToastContainer />
       <Navbar />
-      <div key={location.pathname} className='flex items-start relative z-10 animate-route-in h-screen overflow-hidden'>
+      <div key={location.pathname} className='flex items-start relative z-10 animate-route-in min-h-screen'>
         <Sidebar />
-        <div className='flex-1 min-w-0 w-full pt-16 lg:pt-0 overflow-y-auto overflow-x-hidden main-content-area bg-white' style={{ height: 'calc(100vh - 64px)' }}>
+        <div className='flex-1 min-w-0 w-full pt-16 lg:pt-0 overflow-y-auto overflow-x-hidden main-content-area bg-white'>
           <Routes>
             <Route path='/' element={<></>} />
             <Route path='/admin-dashboard' element={<Dashboard />} />

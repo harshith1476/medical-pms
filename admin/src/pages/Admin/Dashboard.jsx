@@ -142,7 +142,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className='w-full min-h-full bg-white p-3 sm:p-4'>
+    <div className='w-full min-h-full bg-white p-4 sm:p-4 mobile-safe-area'>
       <div className='space-y-3 sm:space-y-4 animate-fade-in-up'>
       {/* Live Clock Widget */}
       <GlassCard className="p-3 sm:p-4">
