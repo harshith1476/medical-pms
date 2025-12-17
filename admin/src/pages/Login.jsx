@@ -109,7 +109,7 @@ const Login = () => {
   }
 
   return (
-    <div className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
+    <div className={`h-screen h-dvh flex items-center justify-center relative overflow-hidden ${
       state === 'Admin' ? 'bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900' : 'bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50'
     }`}>
       {/* ADMIN PANEL BACKGROUND - Animated Purple Theme */}

@@ -29,7 +29,7 @@ const App = () => {
   const location = useLocation()
 
   return dToken || aToken ? (
-    <div className='relative w-full h-screen medical-bg flex flex-col overflow-hidden'>
+    <div className='relative w-full h-screen h-dvh medical-bg flex flex-col overflow-hidden'>
       <ToastContainer />
       <Navbar />
       <div key={location.pathname} className='flex items-start relative z-10 animate-route-in flex-1 min-h-0 overflow-hidden'>
