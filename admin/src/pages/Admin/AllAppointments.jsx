@@ -536,7 +536,7 @@ const AllAppointments = () => {
           )}
 
           {/* Mobile Cards */}
-          <div className='lg:hidden space-y-3 sm:space-y-4 p-0'>
+          <div className='lg:hidden space-y-4 sm:space-y-5 p-0'>
             {filteredAppointments.map((item, index) => {
               const patientPhone = item.actualPatient && !item.actualPatient.isSelf 
                 ? item.actualPatient.phone 
@@ -547,30 +547,30 @@ const AllAppointments = () => {
                 : item.userData.name;
 
               return (
-              <div key={index} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm w-full">
-                    <div className='flex items-start gap-3 sm:gap-4'>
-                      <img src={item.userData.image} className='w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-indigo-100 flex-shrink-0' alt="" />
+              <div key={index} className="bg-white rounded-xl border border-gray-200 p-5 sm:p-6 shadow-sm w-full">
+                    <div className='flex items-start gap-4 sm:gap-5'>
+                      <img src={item.userData.image} className='w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-indigo-100 flex-shrink-0' alt="" />
                       <div className='flex-1 min-w-0'>
                       <button
                         onClick={() => {
                           setSelectedPatient(item);
                           setShowPatientModal(true);
                         }}
-                        className='font-semibold text-sm sm:text-base text-gray-800 hover:text-indigo-600 transition-colors text-left truncate block w-full'
+                        className='font-semibold text-base sm:text-lg text-gray-800 hover:text-indigo-600 transition-colors text-left truncate block w-full mb-1'
                       >
                         {patientName}
                       </button>
                         {item.actualPatient && !item.actualPatient.isSelf && (
-                          <p className='text-[10px] sm:text-xs text-cyan-600 font-medium mt-1 break-words'>
+                          <p className='text-xs sm:text-sm text-cyan-600 font-medium mt-1.5 mb-1.5 break-words'>
                             {item.actualPatient.relationship} • Booked by: {item.userData.name}
                           </p>
                         )}
-                        <p className='text-[10px] sm:text-xs text-gray-500 mt-1'>{slotDateFormat(item.slotDate)} at {item.slotTime}</p>
-                        <div className='flex items-center gap-2 mt-2'>
-                          <img src={item.docData.image} className='w-7 h-7 sm:w-8 sm:h-8 rounded-full flex-shrink-0' alt="" />
+                        <p className='text-xs sm:text-sm text-gray-500 mt-1.5 mb-3'>{slotDateFormat(item.slotDate)} at {item.slotTime}</p>
+                        <div className='flex items-center gap-3 mt-3'>
+                          <img src={item.docData.image} className='w-9 h-9 sm:w-10 sm:h-10 rounded-full flex-shrink-0 border-2 border-blue-100' alt="" />
                           <div className='min-w-0 flex-1'>
-                            <p className='text-xs sm:text-sm font-medium text-gray-700 truncate'>{item.docData.name}</p>
-                            <p className='text-[10px] sm:text-xs text-gray-500 truncate'>{item.docData.speciality}</p>
+                            <p className='text-sm sm:text-base font-medium text-gray-700 truncate mb-0.5'>{item.docData.name}</p>
+                            <p className='text-xs sm:text-sm text-gray-500 truncate'>{item.docData.speciality}</p>
                           {helplineMap[item.docData._id] && helplineMap[item.docData._id].status === 'Active' && (
                             <a 
                               href={`tel:${helplineMap[item.docData._id].helplineNumber.replace(/\s/g, '')}`}
@@ -586,7 +586,7 @@ const AllAppointments = () => {
                       </div>
                       
                       {/* Action Buttons for Mobile */}
-                      <div className='grid grid-cols-3 gap-2 mt-3'>
+                      <div className='grid grid-cols-3 gap-3 mt-4'>
                         <button
                           onClick={() => {
                             if (patientPhone) {
@@ -596,13 +596,13 @@ const AllAppointments = () => {
                             }
                           }}
                           disabled={!patientPhone}
-                          className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 sm:gap-1.5 transition-colors ${
+                          className={`px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 sm:gap-2 transition-colors ${
                             patientPhone 
                               ? 'bg-green-100 text-green-700 hover:bg-green-200' 
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           }`}
                         >
-                          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className='w-4 h-4 sm:w-5 sm:h-5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                           </svg>
                           <span className='hidden sm:inline'>Call</span>
@@ -618,13 +618,13 @@ const AllAppointments = () => {
                             }
                           }}
                           disabled={!patientEmail}
-                          className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 sm:gap-1.5 transition-colors ${
+                          className={`px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 sm:gap-2 transition-colors ${
                             patientEmail 
                               ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           }`}
                         >
-                          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className='w-4 h-4 sm:w-5 sm:h-5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                           </svg>
                           <span className='hidden sm:inline'>Message</span>
@@ -639,29 +639,29 @@ const AllAppointments = () => {
                             }
                           }}
                           disabled={!patientEmail}
-                          className={`px-2 sm:px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 sm:gap-1.5 transition-colors ${
+                          className={`px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-medium flex items-center justify-center gap-1.5 sm:gap-2 transition-colors ${
                             patientEmail 
                               ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
                               : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                           }`}
                         >
-                          <svg className='w-3.5 h-3.5 sm:w-4 sm:h-4' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className='w-4 h-4 sm:w-5 sm:h-5' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                           <span className='hidden sm:inline'>Mail</span>
                         </button>
                       </div>
 
-                        <div className='flex items-center justify-between mt-3'>
-                          <span className='text-base sm:text-lg font-bold text-indigo-600'>{currency}{item.amount}</span>
+                        <div className='flex items-center justify-between mt-4 pt-3 border-t border-gray-200'>
+                          <span className='text-lg sm:text-xl font-bold text-indigo-600'>{currency}{item.amount}</span>
                           {item.cancelled ? (
-                            <span className='px-2 sm:px-3 py-1 bg-red-100 text-red-600 text-[10px] sm:text-xs font-semibold rounded-lg'>Cancelled</span>
+                            <span className='px-3 sm:px-4 py-1.5 bg-red-100 text-red-600 text-xs sm:text-sm font-semibold rounded-lg'>Cancelled</span>
                           ) : item.isCompleted ? (
-                            <span className='px-2 sm:px-3 py-1 bg-green-100 text-green-600 text-[10px] sm:text-xs font-semibold rounded-lg'>Completed</span>
+                            <span className='px-3 sm:px-4 py-1.5 bg-green-100 text-green-600 text-xs sm:text-sm font-semibold rounded-lg'>Completed</span>
                           ) : (
                             <button
                               onClick={() => cancelAppointment(item._id)}
-                              className='p-1.5 sm:p-2 hover:bg-red-50 rounded-lg transition-colors'
+                              className='p-2 sm:p-2.5 hover:bg-red-50 rounded-lg transition-colors'
                             >
                               <img className='w-5 h-5 sm:w-6 sm:h-6' src={assets.cancel_icon} alt="Cancel" />
                             </button>
