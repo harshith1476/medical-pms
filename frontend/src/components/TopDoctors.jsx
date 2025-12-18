@@ -59,19 +59,21 @@ const TopDoctors = () => {
                                         {item.name}
                                     </h3>
                                     <p className='top-doctor-specialty'>{item.speciality}</p>
-                                    {item.experience && (
-                                        <div className='top-doctor-experience-badge'>
-                                            <div className='experience-icon-wrapper'>
+                                    {item.experience && (() => {
+                                        // Extract number from experience string (e.g., "9 Years" -> 9)
+                                        const experienceNum = parseInt(item.experience) || 0;
+                                        return (
+                                            <div className='top-doctor-experience'>
                                                 <svg className='experience-icon' fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
+                                                <span className='experience-text'>
+                                                    <span className='experience-years'>{experienceNum}</span>
+                                                    <span className='experience-label'>{experienceNum !== 1 ? 'Years' : 'Year'}</span>
+                                                </span>
                                             </div>
-                                            <span className='experience-text'>
-                                                <span className='experience-years'>{item.experience}</span>
-                                                <span className='experience-label'>{item.experience !== 1 ? 'Years' : 'Year'}</span>
-                                            </span>
-                                        </div>
-                                    )}
+                                        );
+                                    })()}
                                 </div>
                             </div>
                         ))}

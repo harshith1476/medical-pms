@@ -1673,97 +1673,59 @@ button:disabled {
   font-weight: 400;
 }
 
+/* Highlighted Experience Display */
 .top-doctor-experience {
-  font-size: 12px;
-  color: #9ca3af;
-  margin: 4px 0 0 0;
-  font-weight: 400;
-}
-
-/* Unique Experience Badge Design */
-.top-doctor-experience-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   margin-top: 8px;
-  padding: 6px 12px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
-  border: 1.5px solid #f59e0b;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 12px;
+  font-size: 13px;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.1);
 }
 
-.top-doctor-experience-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: left 0.5s ease;
-}
-
-.top-doctor-card:hover .top-doctor-experience-badge::before {
-  left: 100%;
-}
-
-.top-doctor-card:hover .top-doctor-experience-badge {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
-  border-color: #d97706;
-}
-
-.experience-icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border-radius: 50%;
-  flex-shrink: 0;
+.top-doctor-card:hover .top-doctor-experience {
+  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
+  transform: translateY(-1px);
 }
 
 .experience-icon {
-  width: 12px;
-  height: 12px;
-  color: white;
-  animation: rotate-clockwise 3s linear infinite;
+  width: 14px;
+  height: 14px;
+  color: #d97706;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
-@keyframes rotate-clockwise {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.top-doctor-card:hover .experience-icon {
+  color: #b45309;
+  transform: rotate(15deg);
 }
 
 .experience-text {
-  display: flex;
+  display: inline-flex;
   align-items: baseline;
   gap: 3px;
-  font-weight: 600;
 }
 
 .experience-years {
   font-size: 14px;
   color: #92400e;
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
 }
 
 .experience-label {
-  font-size: 11px;
+  font-size: 12px;
   color: #78350f;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
 }
 
 .top-doctor-availability {
@@ -1824,30 +1786,22 @@ button:disabled {
   }
   
   .top-doctor-experience {
-    font-size: 11px;
-  }
-  
-  .top-doctor-experience-badge {
-    padding: 5px 10px;
+    font-size: 12px;
     gap: 5px;
-  }
-  
-  .experience-icon-wrapper {
-    width: 18px;
-    height: 18px;
+    padding: 3px 8px;
   }
   
   .experience-icon {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
   
   .experience-years {
-    font-size: 13px;
+    font-size: 12px;
   }
   
   .experience-label {
-    font-size: 10px;
+    font-size: 11px;
   }
 }
 
