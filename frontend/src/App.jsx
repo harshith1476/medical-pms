@@ -13,6 +13,7 @@ import MyProfile from './pages/MyProfile'
 import Footer from './components/Footer'
 import AnimatedBackground from './components/AnimatedBackground'
 import PrivacyPolicy from './pages/PrivacyPolicy'
+import DataSecurity from './pages/DataSecurity'
 import Careers from './pages/Careers'
 import ScrollToTop from './components/ScrollToTop'
 import { ToastContainer } from 'react-toastify';
@@ -58,6 +59,7 @@ const App = () => {
           <Route path='/my-appointments' element={<MyAppointments />} />
           <Route path='/my-profile' element={<MyProfile />} />
           <Route path='/privacy-policy' element={<PrivacyPolicy />} />
+          <Route path='/data-security' element={<DataSecurity />} />
           <Route path='/verify' element={<Verify />} />
           <Route path='/emergency' element={<Emergency />} />
           <Route path='/careers' element={<Careers />} />

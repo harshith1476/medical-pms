@@ -153,6 +153,21 @@ const Navbar = () => {
             </li>
             <li>
               <NavLink 
+                to='/data-security' 
+                className={({ isActive }) => 
+                  `nav-link group px-4 py-1.5 rounded-lg font-semibold text-sm transition-all duration-300 relative inline-block ${
+                    isActive 
+                      ? 'text-cyan-600 bg-cyan-50 active' 
+                      : 'text-gray-700 hover:text-cyan-600 hover:bg-gray-50'
+                  }`
+                }
+              >
+                SECURITY
+                <span className='nav-link-line absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 transform origin-left transition-transform duration-300 scale-x-0 group-hover:scale-x-100'></span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink 
                 to='/emergency' 
                 className={({ isActive }) => 
                   `nav-link group px-4 py-1.5 rounded-lg font-bold text-sm transition-all duration-300 relative inline-block ${
@@ -395,6 +410,21 @@ const Navbar = () => {
                     }
                   >
                     CONTACT
+                  </NavLink>
+                </li>
+                <li className="hidden lg:block">
+                  <NavLink 
+                    onClick={() => setShowMenu(false)} 
+                    to='/data-security' 
+                    className={({ isActive }) => 
+                      `block px-4 py-2.5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all duration-200 ${
+                        isActive 
+                          ? 'text-cyan-600 bg-cyan-50' 
+                          : 'text-gray-700 hover:text-cyan-600 hover:bg-gray-50'
+                      }`
+                    }
+                  >
+                    SECURITY
                   </NavLink>
                 </li>
                 <li>

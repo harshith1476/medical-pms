@@ -137,6 +137,15 @@ const Footer = () => {
                   Privacy Policy
                 </button>
               </li>
+              <li>
+                <button 
+                  onClick={() => handleNavClick('/data-security')}
+                  className='text-gray-600 hover:text-cyan-600 text-sm transition-colors duration-200 flex items-center gap-2 group'
+                >
+                  <span className='w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-cyan-500 transition-colors'></span>
+                  Data Security
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -192,6 +201,12 @@ const Footer = () => {
                 className='hover:text-cyan-600 transition-colors duration-200'
               >
                 Privacy
+              </button>
+              <button 
+                onClick={() => handleNavClick('/data-security')}
+                className='hover:text-cyan-600 transition-colors duration-200'
+              >
+                Security
               </button>
               <a href="#" className='hover:text-cyan-600 transition-colors duration-200'>Terms</a>
               <a href="#" className='hover:text-cyan-600 transition-colors duration-200'>Cookies</a>
