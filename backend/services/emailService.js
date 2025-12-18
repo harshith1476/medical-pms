@@ -1,79 +1,13 @@
-import nodemailer from 'nodemailer';
+import { sendEmail } from './brevoMailer.js';
 
-// Create reusable transporter
-const createTransporter = () => {
-    const emailUser = process.env.EMAIL_USER;
-    let emailPassword = process.env.EMAIL_APP_PASSWORD;
-    
-    // Debug: Check if env variables are set (without exposing password)
-    if (!emailUser) {
-        console.error('❌ EMAIL_USER is not set in .env file');
-        throw new Error('EMAIL_USER environment variable is not configured. Please add EMAIL_USER=your-email@gmail.com to your .env file.');
-    }
-    
-    if (!emailPassword) {
-        console.error('❌ EMAIL_APP_PASSWORD is not set in .env file');
-        throw new Error('EMAIL_APP_PASSWORD environment variable is not configured. Please add EMAIL_APP_PASSWORD=your_app_password to your .env file. See GMAIL_APP_PASSWORD_SETUP.md for instructions.');
-    }
-    
-    // Remove spaces from password (App Passwords sometimes have spaces when copied)
-    emailPassword = emailPassword.replace(/\s/g, '');
-    
-    // Check if password looks like a regular password (too short)
-    if (emailPassword.length < 16) {
-        console.warn('⚠️  WARNING: EMAIL_APP_PASSWORD appears to be too short. Gmail App Passwords are 16 characters long.');
-        console.warn('   Make sure you\'re using a Gmail App Password, not your regular Gmail password.');
-        console.warn('   See QUICK_EMAIL_FIX.md for step-by-step instructions.');
-    }
-    
-    console.log(`📧 Email Configuration:`);
-    console.log(`   User: ${emailUser}`);
-    console.log(`   Password: ${emailPassword ? '***' + emailPassword.slice(-4) : 'NOT SET'} (${emailPassword?.length || 0} characters)`);
-    console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-    
-    // Create transporter with additional options for production
-    const transporterConfig = {
-        service: 'gmail',
-        auth: {
-            user: emailUser,
-            pass: emailPassword
-        }
-    };
-    
-    // Add production-specific settings
-    if (process.env.NODE_ENV === 'production') {
-        transporterConfig.secure = true;
-        transporterConfig.tls = {
-            rejectUnauthorized: false // Allow self-signed certificates if needed
-        };
-    }
-    
-    const transporter = nodemailer.createTransport(transporterConfig);
-    
-    // Verify connection in production (async, but don't block)
-    if (process.env.NODE_ENV === 'production') {
-        transporter.verify().then(() => {
-            console.log('✅ Email server connection verified successfully');
-        }).catch((verifyError) => {
-            console.error('❌ Email server verification failed:', verifyError.message);
-            console.error('   This might indicate incorrect credentials or network issues');
-        });
-    }
-    
-    return transporter;
-};
+// Brevo email service - all emails now use Brevo API
 
 // General contact form email
 export const sendContactMessage = async ({ name, email, message }) => {
     try {
-        const transporter = createTransporter();
-
-        const mailOptions = {
-            from: `"MediChain Website" <${process.env.EMAIL_USER}>`,
-            // Official website email recipient
-            to: process.env.CONTACT_EMAIL || process.env.EMAIL_USER || 'medichain123@gmail.com',
-            subject: 'New Contact Message - MediChain Website',
-            html: `
+        const recipientEmail = process.env.CONTACT_EMAIL || process.env.BERVO_SENDER_EMAIL || process.env.BREVO_SENDER_EMAIL || 'medichain123@gmail.com';
+        
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -135,18 +69,26 @@ export const sendContactMessage = async ({ name, email, message }) => {
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log(`✅ Contact message email sent from ${email} (name: ${name})`);
-        console.log(`   Message ID: ${info.messageId}`);
+        const result = await sendEmail(
+            recipientEmail,
+            'New Contact Message - MediChain Website',
+            htmlContent,
+            'MediChain Team',
+            'MediChain Website'
+        );
 
-        return {
-            success: true,
-            message: 'Contact message sent successfully',
-            messageId: info.messageId
-        };
+        if (result.success) {
+            console.log(`✅ Contact message email sent from ${email} (name: ${name})`);
+            return {
+                success: true,
+                message: 'Contact message sent successfully',
+                messageId: result.messageId
+            };
+        } else {
+            return result;
+        }
     } catch (error) {
         console.error('❌ Error sending contact message email:', error);
         return {
@@ -160,13 +102,7 @@ export const sendContactMessage = async ({ name, email, message }) => {
 // Send OTP email for password reset
 export const sendPasswordResetOTP = async (email, otp, userName) => {
     try {
-        const transporter = createTransporter();
-
-        const mailOptions = {
-            from: `"MediChain" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Password Reset OTP - MediChain',
-            html: `
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -250,34 +186,32 @@ export const sendPasswordResetOTP = async (email, otp, userName) => {
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        const info = await transporter.sendMail(mailOptions);
-        
-        console.log(`✅ OTP email sent successfully to ${email}`);
-        console.log(`   Message ID: ${info.messageId}`);
-        
-        return {
-            success: true,
-            message: 'OTP email sent successfully',
-            messageId: info.messageId
-        };
+        const result = await sendEmail(
+            email,
+            'Password Reset OTP - MediChain',
+            htmlContent,
+            userName || 'User',
+            'MediChain'
+        );
+
+        if (result.success) {
+            console.log(`✅ Password reset OTP email sent successfully to ${email}`);
+            return {
+                success: true,
+                message: 'OTP email sent successfully',
+                messageId: result.messageId
+            };
+        } else {
+            return result;
+        }
 
     } catch (error) {
-        console.error('❌ Error sending OTP email:', error);
-        
-        // Provide helpful error messages
-        let errorMessage = 'Failed to send OTP email';
-        if (error.code === 'EAUTH') {
-            errorMessage = 'Email authentication failed. Please check your Gmail App Password in .env file. Make sure you\'re using an App Password (16 characters), not your regular Gmail password. See GMAIL_APP_PASSWORD_SETUP.md for instructions.';
-        } else if (error.message && error.message.includes('password')) {
-            errorMessage = 'Email password not configured. Please set EMAIL_APP_PASSWORD in .env file with a Gmail App Password.';
-        }
-        
+        console.error('❌ Error sending password reset OTP email:', error);
         return {
             success: false,
-            message: errorMessage,
+            message: 'Failed to send OTP email',
             error: error.message
         };
     }
@@ -286,8 +220,6 @@ export const sendPasswordResetOTP = async (email, otp, userName) => {
 // Send appointment confirmation email
 export const sendAppointmentConfirmation = async (email, appointmentDetails) => {
     try {
-        const transporter = createTransporter();
-
         const {
             patientName,
             doctorName,
@@ -300,11 +232,7 @@ export const sendAppointmentConfirmation = async (email, appointmentDetails) => 
             googleMapsLink
         } = appointmentDetails;
 
-        const mailOptions = {
-            from: `"MediChain" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Appointment Confirmed - MediChain Hospital',
-            html: `
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -570,19 +498,26 @@ export const sendAppointmentConfirmation = async (email, appointmentDetails) => 
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        const info = await transporter.sendMail(mailOptions);
-        
-        console.log(`✅ Appointment confirmation email sent to ${email}`);
-        console.log(`   Message ID: ${info.messageId}`);
-        
-        return {
-            success: true,
-            message: 'Appointment confirmation email sent successfully',
-            messageId: info.messageId
-        };
+        const result = await sendEmail(
+            email,
+            'Appointment Confirmed - MediChain Hospital',
+            htmlContent,
+            patientName || 'Patient',
+            'MediChain'
+        );
+
+        if (result.success) {
+            console.log(`✅ Appointment confirmation email sent to ${email}`);
+            return {
+                success: true,
+                message: 'Appointment confirmation email sent successfully',
+                messageId: result.messageId
+            };
+        } else {
+            return result;
+        }
 
     } catch (error) {
         console.error('❌ Error sending appointment confirmation email:', error);
@@ -597,13 +532,8 @@ export const sendAppointmentConfirmation = async (email, appointmentDetails) => 
 // Send password reset confirmation email
 export const sendPasswordResetConfirmation = async (email, userName) => {
     try {
-        const transporter = createTransporter();
-
-        const mailOptions = {
-            from: `"MediChain" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Password Reset Successful - MediChain',
-            html: `
+        const senderEmail = process.env.BERVO_SENDER_EMAIL || process.env.BREVO_SENDER_EMAIL || 'medichain123@gmail.com';
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -670,8 +600,8 @@ export const sendPasswordResetConfirmation = async (email, userName) => {
                             </ul>
                         </div>
                         
-                        <p><strong>Didn't make this change?</strong></p>
-                        <p>If you didn't reset your password, please contact our support team immediately at ${process.env.EMAIL_USER}</p>
+                            <p><strong>Didn't make this change?</strong></p>
+                        <p>If you didn't reset your password, please contact our support team immediately at ${senderEmail}</p>
                         
                         <div class="footer">
                             <p>© ${new Date().getFullYear()} MediChain. All rights reserved.</p>
@@ -680,17 +610,25 @@ export const sendPasswordResetConfirmation = async (email, userName) => {
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        await transporter.sendMail(mailOptions);
-        
-        console.log(`✅ Password reset confirmation email sent to ${email}`);
-        
-        return {
-            success: true,
-            message: 'Confirmation email sent successfully'
-        };
+        const result = await sendEmail(
+            email,
+            'Password Reset Successful - MediChain',
+            htmlContent,
+            userName || 'User',
+            'MediChain'
+        );
+
+        if (result.success) {
+            console.log(`✅ Password reset confirmation email sent to ${email}`);
+            return {
+                success: true,
+                message: 'Confirmation email sent successfully'
+            };
+        } else {
+            return result;
+        }
 
     } catch (error) {
         console.error('❌ Error sending confirmation email:', error);
@@ -705,8 +643,6 @@ export const sendPasswordResetConfirmation = async (email, userName) => {
 // Send appointment cancellation email
 export const sendAppointmentCancellationEmail = async (email, appointmentDetails) => {
     try {
-        const transporter = createTransporter();
-
         const {
             patientName,
             doctorName,
@@ -716,11 +652,9 @@ export const sendAppointmentCancellationEmail = async (email, appointmentDetails
             cancelledBy
         } = appointmentDetails;
 
-        const mailOptions = {
-            from: `"MediChain" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Appointment Cancelled - MediChain Hospital',
-            html: `
+        const senderEmail = process.env.BERVO_SENDER_EMAIL || process.env.BREVO_SENDER_EMAIL || 'medichain123@gmail.com';
+        const frontendUrl = process.env.FRONTEND_URL || 'https://medichain.com';
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -888,7 +822,7 @@ export const sendAppointmentCancellationEmail = async (email, appointmentDetails
                             </div>
 
                             <div style="text-align: center; margin: 25px 0;">
-                                <a href="${process.env.FRONTEND_URL || 'https://medichain.com'}/doctors" class="button">
+                                <a href="${frontendUrl}/doctors" class="button">
                                     📅 Book New Appointment
                                 </a>
                             </div>
@@ -898,26 +832,33 @@ export const sendAppointmentCancellationEmail = async (email, appointmentDetails
                         </div>
 
                         <div class="footer">
-                            <p>📞 For assistance, contact us at ${process.env.EMAIL_USER}</p>
+                            <p>📞 For assistance, contact us at ${senderEmail}</p>
                             <p style="margin-top: 10px;">© ${new Date().getFullYear()} MediChain Hospital. All rights reserved.</p>
                             <p>This is an automated email, please do not reply to this message.</p>
                         </div>
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        const info = await transporter.sendMail(mailOptions);
-        
-        console.log(`✅ Appointment cancellation email sent to ${email}`);
-        console.log(`   Message ID: ${info.messageId}`);
-        
-        return {
-            success: true,
-            message: 'Appointment cancellation email sent successfully',
-            messageId: info.messageId
-        };
+        const result = await sendEmail(
+            email,
+            'Appointment Cancelled - MediChain Hospital',
+            htmlContent,
+            patientName || 'Patient',
+            'MediChain'
+        );
+
+        if (result.success) {
+            console.log(`✅ Appointment cancellation email sent to ${email}`);
+            return {
+                success: true,
+                message: 'Appointment cancellation email sent successfully',
+                messageId: result.messageId
+            };
+        } else {
+            return result;
+        }
 
     } catch (error) {
         console.error('❌ Error sending appointment cancellation email:', error);
@@ -932,8 +873,6 @@ export const sendAppointmentCancellationEmail = async (email, appointmentDetails
 // Send appointment completion thank you email
 export const sendAppointmentCompletionEmail = async (email, appointmentDetails) => {
     try {
-        const transporter = createTransporter();
-
         const {
             patientName,
             doctorName,
@@ -942,11 +881,9 @@ export const sendAppointmentCompletionEmail = async (email, appointmentDetails) 
             time
         } = appointmentDetails;
 
-        const mailOptions = {
-            from: `"MediChain" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Thank You for Visiting - MediChain Hospital',
-            html: `
+        const senderEmail = process.env.BERVO_SENDER_EMAIL || process.env.BREVO_SENDER_EMAIL || 'medichain123@gmail.com';
+        const frontendUrl = process.env.FRONTEND_URL || 'https://medichain.com';
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1155,10 +1092,10 @@ export const sendAppointmentCompletionEmail = async (email, appointmentDetails) 
                             </div>
 
                             <div style="text-align: center; margin: 25px 0;">
-                                <a href="${process.env.FRONTEND_URL || 'https://medichain.com'}/my-appointments" class="button">
+                                <a href="${frontendUrl}/my-appointments" class="button">
                                     📋 View My Records
                                 </a>
-                                <a href="${process.env.FRONTEND_URL || 'https://medichain.com'}/doctors" class="button button-secondary">
+                                <a href="${frontendUrl}/doctors" class="button button-secondary">
                                     📅 Book Next Appointment
                                 </a>
                             </div>
@@ -1183,26 +1120,33 @@ export const sendAppointmentCompletionEmail = async (email, appointmentDetails) 
 
                         <div class="footer">
                             <p><strong>📞 24/7 Support:</strong> Available for any concerns or emergencies</p>
-                            <p>📧 Email: ${process.env.EMAIL_USER} | 🌐 Website: ${process.env.FRONTEND_URL || 'medichain.com'}</p>
+                            <p>📧 Email: ${senderEmail} | 🌐 Website: ${frontendUrl}</p>
                             <p style="margin-top: 15px;">© ${new Date().getFullYear()} MediChain Hospital. All rights reserved.</p>
                             <p>This is an automated email, please do not reply to this message.</p>
                         </div>
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        const info = await transporter.sendMail(mailOptions);
-        
-        console.log(`✅ Appointment completion thank you email sent to ${email}`);
-        console.log(`   Message ID: ${info.messageId}`);
-        
-        return {
-            success: true,
-            message: 'Appointment completion email sent successfully',
-            messageId: info.messageId
-        };
+        const result = await sendEmail(
+            email,
+            'Thank You for Visiting - MediChain Hospital',
+            htmlContent,
+            patientName || 'Patient',
+            'MediChain'
+        );
+
+        if (result.success) {
+            console.log(`✅ Appointment completion thank you email sent to ${email}`);
+            return {
+                success: true,
+                message: 'Appointment completion email sent successfully',
+                messageId: result.messageId
+            };
+        } else {
+            return result;
+        }
 
     } catch (error) {
         console.error('❌ Error sending appointment completion email:', error);
@@ -1217,13 +1161,7 @@ export const sendAppointmentCompletionEmail = async (email, appointmentDetails) 
 // Send job interview invitation email when application is approved
 export const sendJobInterviewEmail = async (email, { name, role }) => {
     try {
-        const transporter = createTransporter();
-
-        const mailOptions = {
-            from: `"MediChain Careers" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: `Interview Invitation - ${role || 'MediChain+'} Position`,
-            html: `
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1324,12 +1262,22 @@ export const sendJobInterviewEmail = async (email, { name, role }) => {
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        await transporter.sendMail(mailOptions);
-        console.log(`✅ Job interview invitation email sent to ${email}`);
-        return { success: true, message: 'Interview email sent successfully' };
+        const result = await sendEmail(
+            email,
+            `Interview Invitation - ${role || 'MediChain+'} Position`,
+            htmlContent,
+            name || 'Candidate',
+            'MediChain Careers'
+        );
+
+        if (result.success) {
+            console.log(`✅ Job interview invitation email sent to ${email}`);
+            return { success: true, message: 'Interview email sent successfully' };
+        } else {
+            return result;
+        }
     } catch (error) {
         console.error('❌ Error sending job interview email:', error);
         return { success: false, message: 'Failed to send interview email', error: error.message };
@@ -1339,13 +1287,7 @@ export const sendJobInterviewEmail = async (email, { name, role }) => {
 // Send job rejection email when application is rejected
 export const sendJobRejectionEmail = async (email, { name, role }) => {
     try {
-        const transporter = createTransporter();
-
-        const mailOptions = {
-            from: `"MediChain Careers" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: `Application Update - ${role || 'MediChain+'} Position`,
-            html: `
+        const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
@@ -1429,12 +1371,22 @@ export const sendJobRejectionEmail = async (email, { name, role }) => {
                     </div>
                 </body>
                 </html>
-            `
-        };
+            `;
 
-        await transporter.sendMail(mailOptions);
-        console.log(`✅ Job rejection email sent to ${email}`);
-        return { success: true, message: 'Rejection email sent successfully' };
+        const result = await sendEmail(
+            email,
+            `Application Update - ${role || 'MediChain+'} Position`,
+            htmlContent,
+            name || 'Candidate',
+            'MediChain Careers'
+        );
+
+        if (result.success) {
+            console.log(`✅ Job rejection email sent to ${email}`);
+            return { success: true, message: 'Rejection email sent successfully' };
+        } else {
+            return result;
+        }
     } catch (error) {
         console.error('❌ Error sending job rejection email:', error);
         return { success: false, message: 'Failed to send rejection email', error: error.message };

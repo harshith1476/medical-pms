@@ -218,6 +218,113 @@ export const sendOTPEmail = async (to, otp, userName = 'User') => {
 }
 
 /**
+ * Generic function to send any email via Brevo API
+ * @param {string} to - Recipient email address
+ * @param {string} subject - Email subject
+ * @param {string} htmlContent - HTML email content
+ * @param {string} recipientName - Recipient name (optional)
+ * @param {string} senderName - Sender name (optional, defaults to appName)
+ * @returns {Promise<{success: boolean, message: string, messageId?: string}>}
+ */
+export const sendEmail = async (to, subject, htmlContent, recipientName = 'User', senderName = null) => {
+    try {
+        const { apiKey, senderEmail, appName } = getBrevoConfig()
+        
+        // Validate API key
+        if (!apiKey) {
+            console.error('❌ BERVO_API_KEY is not set in .env file')
+            return {
+                success: false,
+                message: 'Email service not configured. Please contact administrator.'
+            }
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(to)) {
+            return {
+                success: false,
+                message: 'Invalid email address format'
+            }
+        }
+
+        // Prepare Brevo API payload
+        const payload = {
+            sender: {
+                name: senderName || appName,
+                email: senderEmail
+            },
+            to: [
+                {
+                    email: to,
+                    name: recipientName
+                }
+            ],
+            subject: subject,
+            htmlContent: htmlContent
+        }
+
+        // Send email via Brevo API
+        const response = await axios.post(BREVO_API_URL, payload, {
+            headers: {
+                'api-key': apiKey,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            timeout: 10000 // 10 second timeout
+        })
+
+        // Log success (without exposing sensitive data)
+        console.log(`✅ Email sent successfully to ${to}`)
+        console.log(`   Subject: ${subject}`)
+        console.log(`   Message ID: ${response.data?.messageId || 'N/A'}`)
+
+        return {
+            success: true,
+            message: 'Email sent successfully',
+            messageId: response.data?.messageId
+        }
+
+    } catch (error) {
+        // Handle different error types
+        let errorMessage = 'Failed to send email'
+        
+        if (error.response) {
+            // Brevo API error response
+            const status = error.response.status
+            const data = error.response.data
+            
+            if (status === 401) {
+                errorMessage = 'Invalid API key. Please check BERVO_API_KEY in .env file'
+            } else if (status === 400) {
+                errorMessage = data?.message || 'Invalid email request'
+            } else if (status === 429) {
+                errorMessage = 'Rate limit exceeded. Please try again later'
+            } else if (status >= 500) {
+                errorMessage = 'Brevo service temporarily unavailable. Please try again later'
+            } else {
+                errorMessage = data?.message || `Brevo API error: ${status}`
+            }
+            
+            console.error(`❌ Brevo API Error (${status}):`, data?.message || error.message)
+        } else if (error.request) {
+            // Network/timeout error
+            errorMessage = 'Network error. Please check your internet connection'
+            console.error('❌ Network error sending email:', error.message)
+        } else {
+            // Other errors
+            errorMessage = error.message || 'Failed to send email'
+            console.error('❌ Error sending email:', error.message)
+        }
+
+        return {
+            success: false,
+            message: errorMessage
+        }
+    }
+}
+
+/**
  * Verify Brevo API connection
  * @returns {Promise<{success: boolean, message: string}>}
  */

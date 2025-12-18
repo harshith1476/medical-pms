@@ -1,26 +1,7 @@
-import nodemailer from 'nodemailer';
+import { sendEmail } from '../services/brevoMailer.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
-// Create reusable transporter object using SMTP
-const createTransporter = () => {
-    // Try multiple environment variable names for compatibility
-    const emailUser = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'medichain123@gmail.com';
-    const emailPassword = process.env.ADMIN_EMAIL_PASSWORD || process.env.EMAIL_APP_PASSWORD || '';
-    
-    if (!emailPassword) {
-        throw new Error('Email password not configured. Please set ADMIN_EMAIL_PASSWORD or EMAIL_APP_PASSWORD in .env file');
-    }
-
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: emailUser,
-            pass: emailPassword
-        }
-    });
-};
 
         // Send email from admin to patient
 export const sendEmailToPatient = async (req, res) => {
@@ -44,19 +25,8 @@ export const sendEmailToPatient = async (req, res) => {
             });
         }
 
-        // Get email credentials
-        const emailUser = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'medichain123@gmail.com';
-        
-        // Create transporter
-        let transporter;
-        try {
-            transporter = createTransporter();
-        } catch (transporterError) {
-            return res.json({
-                success: false,
-                message: transporterError.message || 'Email service not configured. Please contact administrator.'
-            });
-        }
+        // Get sender email from Brevo config
+        const senderEmail = process.env.BERVO_SENDER_EMAIL || process.env.BREVO_SENDER_EMAIL || 'medichain123@gmail.com';
 
         // Format appointment date for display
         const formatAppointmentDate = (dateStr) => {
@@ -70,12 +40,8 @@ export const sendEmailToPatient = async (req, res) => {
             return dateStr.replace(/_/g, ' ');
         };
 
-        // Email options with card-type horizontal layout (email-safe)
-        const mailOptions = {
-            from: `MediChain+ <${emailUser}>`,
-            to: patientEmail,
-            subject: subject,
-            html: `
+        // Prepare HTML email content
+        const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -269,7 +235,7 @@ export const sendEmailToPatient = async (req, res) => {
                                     <td align="center" style="padding: 6px 0;">
                                         <p style="margin: 0; color: #6b7280; font-size: 13px; line-height: 1.6;">
                                             📞 <a href="tel:18002991874" style="color: #667eea; text-decoration: none; font-weight: 500;">1800-299-1874</a><br>
-                                            📧 <a href="mailto:medichain123@gmail.com" style="color: #667eea; text-decoration: none; font-weight: 500;">medichain123@gmail.com</a>
+                                            📧 <a href="mailto:${senderEmail}" style="color: #667eea; text-decoration: none; font-weight: 500;">${senderEmail}</a>
                                         </p>
                                     </td>
                                 </tr>
@@ -293,41 +259,35 @@ export const sendEmailToPatient = async (req, res) => {
     </table>
 </body>
 </html>
-            `
-        };
+            `;
 
-        // Send email
-        const info = await transporter.sendMail(mailOptions);
+        // Send email via Brevo
+        const result = await sendEmail(
+            patientEmail,
+            subject,
+            htmlContent,
+            'Patient',
+            'MediChain+'
+        );
 
-        res.json({
-            success: true,
-            message: 'Email sent successfully',
-            messageId: info.messageId
-        });
+        if (result.success) {
+            res.json({
+                success: true,
+                message: 'Email sent successfully',
+                messageId: result.messageId
+            });
+        } else {
+            res.json({
+                success: false,
+                message: result.message || 'Failed to send email'
+            });
+        }
 
     } catch (error) {
         console.error('Error sending email:', error);
-        
-        // Provide more specific error messages
-        let errorMessage = 'Failed to send email.';
-        
-        if (error.message && error.message.includes('Invalid login')) {
-            errorMessage = 'Invalid email credentials. Please check ADMIN_EMAIL_PASSWORD in .env file.';
-        } else if (error.message && error.message.includes('Missing credentials')) {
-            errorMessage = 'Email password not configured. Please set ADMIN_EMAIL_PASSWORD or EMAIL_APP_PASSWORD in .env file.';
-        } else if (error.message && error.message.includes('not configured')) {
-            errorMessage = error.message;
-        } else if (error.code === 'EAUTH') {
-            errorMessage = 'Email authentication failed. Please verify your Gmail App Password.';
-        } else if (error.code === 'ECONNECTION') {
-            errorMessage = 'Cannot connect to email server. Please check your internet connection.';
-        } else {
-            errorMessage = error.message || 'Failed to send email. Please check email configuration.';
-        }
-        
         res.json({
             success: false,
-            message: errorMessage
+            message: error.message || 'Failed to send email. Please check email configuration.'
         });
     }
 };

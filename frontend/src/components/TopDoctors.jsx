@@ -60,9 +60,17 @@ const TopDoctors = () => {
                                     </h3>
                                     <p className='top-doctor-specialty'>{item.speciality}</p>
                                     {item.experience && (
-                                        <p className='top-doctor-experience'>
-                                            {item.experience} Year{item.experience !== 1 ? 's' : ''} Experience
-                                        </p>
+                                        <div className='top-doctor-experience-badge'>
+                                            <div className='experience-icon-wrapper'>
+                                                <svg className='experience-icon' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <span className='experience-text'>
+                                                <span className='experience-years'>{item.experience}</span>
+                                                <span className='experience-label'>{item.experience !== 1 ? 'Years' : 'Year'}</span>
+                                            </span>
+                                        </div>
                                     )}
                                 </div>
                             </div>

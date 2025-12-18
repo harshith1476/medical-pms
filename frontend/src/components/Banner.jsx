@@ -86,11 +86,11 @@ const Banner = () => {
                 >
                     <div className="relative w-full h-full flex justify-center items-center">
                         <img 
-                            className='w-full max-w-2xl lg:max-w-3xl xl:max-w-4xl transform transition-transform duration-1000 group-hover:scale-105' 
+                            className='w-full max-w-lg lg:max-w-xl xl:max-w-2xl transform transition-transform duration-1000 group-hover:scale-105' 
                             src={assets.appointment_img} 
                             alt="Doctor appointment" 
                             style={{ 
-                                maxHeight: '600px',
+                                maxHeight: '400px',
                                 objectFit: 'contain'
                             }}
                         />
