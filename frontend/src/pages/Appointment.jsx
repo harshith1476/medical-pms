@@ -668,29 +668,29 @@ const Appointment = () => {
             <AnimatePresence>
                 {showTicket && appointmentData && (
                     <>
-                        {/* Backdrop - Darker and solid on mobile */}
+                        {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowTicket(false)}
-                            className="fixed inset-0 bg-black/80 md:bg-black/50 md:backdrop-blur-sm z-modal-backdrop"
+                            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-modal-backdrop"
                         />
 
                         {/* Modal */}
-                        <div className="fixed inset-0 z-modal flex items-center justify-center md:p-4 pointer-events-none overflow-y-auto">
+                        <div className="fixed inset-0 z-modal flex items-center justify-center p-4 pointer-events-none overflow-y-auto">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
-                                className="pointer-events-auto w-full h-full md:h-auto md:max-w-[700px] md:my-4"
+                                className="pointer-events-auto w-full max-w-[95%] sm:max-w-[500px] md:max-w-[700px] my-4"
                             >
-                                {/* Responsive Card - Full screen on mobile, card on desktop */}
-                                <div className="bg-white md:rounded-2xl shadow-2xl overflow-hidden border-0 md:border md:border-gray-200 h-full md:h-auto flex flex-col max-h-screen md:max-h-[90vh]">
+                                {/* Responsive Card - Centered card on all devices */}
+                                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 flex flex-col max-h-[90vh]">
                                     
-                                    {/* Top Header - Sticky on mobile */}
-                                    <div className='flex sticky top-0 z-[11000] shadow-md'>
-                                        <div className='bg-cyan-500 px-5 md:px-6 py-3 md:py-3 flex-1 flex items-center gap-3'>
+                                    {/* Top Header */}
+                                    <div className='flex relative shadow-md'>
+                                        <div className='bg-cyan-500 px-5 md:px-6 py-3 md:py-3 flex-1 flex items-center gap-3 rounded-t-2xl'>
                                             <div className='hidden sm:block'>
                                                 <BrandLogo size="small" variant="header" clickable={false} className="brightness-0 invert" />
                                             </div>
@@ -699,17 +699,16 @@ const Appointment = () => {
                                                 <p className='text-white/80 text-xs md:text-xs'>Appointment Confirmation</p>
                                             </div>
                                         </div>
-                                        <div className='bg-green-500 px-4 md:px-6 py-3 md:py-3 flex items-center gap-2 md:gap-2'>
+                                        <div className='bg-green-500 px-4 md:px-6 py-3 md:py-3 flex items-center gap-2 md:gap-2 rounded-tr-2xl'>
                                             <svg className="w-5 h-5 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                             </svg>
                                             <span className='text-white font-bold text-sm md:text-sm'>BOOKED</span>
                                         </div>
-                                        {/* Close button for mobile */}
+                                        {/* Close button */}
                                         <button
                                             onClick={() => setShowTicket(false)}
-                                            className='absolute top-3 right-3 md:hidden w-9 h-9 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm'
-                                            style={{ zIndex: 11001 }}
+                                            className='absolute top-3 right-3 w-9 h-9 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm z-10'
                                         >
                                             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -717,8 +716,8 @@ const Appointment = () => {
                                         </button>
                                     </div>
 
-                                    {/* Body - Vertical on mobile, Horizontal on desktop - Scrollable on mobile */}
-                                    <div className='flex flex-col md:flex-row flex-1 overflow-y-auto md:overflow-visible'>
+                                    {/* Body - Vertical on mobile, Horizontal on desktop - Scrollable */}
+                                    <div className='flex flex-col md:flex-row flex-1 overflow-y-auto'>
                                         
                                         {/* Details */}
                                         <div className='flex-1 p-5 md:p-6 order-1'>
@@ -775,7 +774,7 @@ const Appointment = () => {
                                     </div>
 
                                     {/* Bottom Buttons */}
-                                    <div className='flex gap-3 md:gap-3 p-4 md:p-4 bg-gray-50 border-t border-gray-200'>
+                                    <div className='flex gap-3 md:gap-3 p-4 md:p-4 bg-gray-50 border-t border-gray-200 rounded-b-2xl'>
                                         <button
                                             onClick={() => { setShowTicket(false); navigate('/my-appointments') }}
                                             className="flex-1 py-3 md:py-3 bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-white font-semibold rounded-xl md:rounded-xl text-sm md:text-sm transition-colors shadow-sm"
