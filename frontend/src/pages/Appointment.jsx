@@ -686,29 +686,29 @@ const Appointment = () => {
                                 className="pointer-events-auto w-full h-full md:h-auto md:max-w-[700px] md:my-4"
                             >
                                 {/* Responsive Card - Full screen on mobile, card on desktop */}
-                                <div className="bg-white md:rounded-2xl shadow-2xl overflow-hidden border-0 md:border md:border-gray-200 h-full md:h-auto flex flex-col">
+                                <div className="bg-white md:rounded-2xl shadow-2xl overflow-hidden border-0 md:border md:border-gray-200 h-full md:h-auto flex flex-col max-h-screen md:max-h-[90vh]">
                                     
                                     {/* Top Header - Sticky on mobile */}
-                                    <div className='flex sticky top-0 z-[11000]'>
-                                        <div className='bg-cyan-500 px-4 md:px-6 py-2 md:py-3 flex-1 flex items-center gap-3'>
+                                    <div className='flex sticky top-0 z-[11000] shadow-md'>
+                                        <div className='bg-cyan-500 px-5 md:px-6 py-3 md:py-3 flex-1 flex items-center gap-3'>
                                             <div className='hidden sm:block'>
                                                 <BrandLogo size="small" variant="header" clickable={false} className="brightness-0 invert" />
                                             </div>
                                             <div>
-                                                <p className='text-white text-sm md:text-base font-bold tracking-wide'>MediChain</p>
-                                                <p className='text-white/70 text-[10px] md:text-xs'>Appointment Confirmation</p>
+                                                <p className='text-white text-base md:text-base font-bold tracking-wide'>MediChain</p>
+                                                <p className='text-white/80 text-xs md:text-xs'>Appointment Confirmation</p>
                                             </div>
                                         </div>
-                                        <div className='bg-green-500 px-3 md:px-6 py-2 md:py-3 flex items-center gap-1 md:gap-2'>
-                                            <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div className='bg-green-500 px-4 md:px-6 py-3 md:py-3 flex items-center gap-2 md:gap-2'>
+                                            <svg className="w-5 h-5 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                             </svg>
-                                            <span className='text-white font-bold text-xs md:text-sm'>BOOKED</span>
+                                            <span className='text-white font-bold text-sm md:text-sm'>BOOKED</span>
                                         </div>
                                         {/* Close button for mobile */}
                                         <button
                                             onClick={() => setShowTicket(false)}
-                                            className='absolute top-2 right-2 md:hidden w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm'
+                                            className='absolute top-3 right-3 md:hidden w-9 h-9 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors backdrop-blur-sm'
                                             style={{ zIndex: 11001 }}
                                         >
                                             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -721,30 +721,30 @@ const Appointment = () => {
                                     <div className='flex flex-col md:flex-row flex-1 overflow-y-auto md:overflow-visible'>
                                         
                                         {/* Details */}
-                                        <div className='flex-1 p-4 md:p-6 order-1'>
+                                        <div className='flex-1 p-5 md:p-6 order-1'>
                                             {/* Patient & ID */}
-                                            <div className='border-b border-dashed border-gray-200 pb-2 md:pb-3 mb-3 md:mb-4'>
-                                                <p className='text-gray-800 font-bold text-lg md:text-xl'>{appointmentData.patientName}</p>
-                                                <p className='font-mono text-gray-400 text-[10px] md:text-xs mt-1'>ID: {appointmentData.id}</p>
+                                            <div className='border-b border-dashed border-gray-200 pb-3 md:pb-3 mb-4 md:mb-4'>
+                                                <p className='text-gray-800 font-bold text-2xl md:text-xl leading-tight'>{appointmentData.patientName}</p>
+                                                <p className='font-mono text-gray-500 text-xs md:text-xs mt-1.5'>ID: {appointmentData.id}</p>
                                             </div>
 
                                             {/* Details Grid - 2 columns */}
-                                            <div className='grid grid-cols-2 gap-x-4 md:gap-x-6 gap-y-3 md:gap-y-4'>
+                                            <div className='grid grid-cols-2 gap-x-5 md:gap-x-6 gap-y-4 md:gap-y-4'>
                                                 <div>
-                                                    <p className='text-[9px] md:text-[10px] text-gray-400 uppercase font-medium'>Doctor</p>
-                                                    <p className='font-semibold text-gray-800 text-xs md:text-sm mt-0.5 md:mt-1'>{appointmentData.doctorName}</p>
+                                                    <p className='text-[11px] md:text-[10px] text-gray-500 uppercase font-semibold tracking-wide'>Doctor</p>
+                                                    <p className='font-semibold text-gray-800 text-sm md:text-sm mt-1.5 md:mt-1 leading-tight'>{appointmentData.doctorName}</p>
                                                 </div>
                                                 <div>
-                                                    <p className='text-[9px] md:text-[10px] text-gray-400 uppercase font-medium'>Specialty</p>
-                                                    <p className='font-semibold text-cyan-600 text-xs md:text-sm mt-0.5 md:mt-1'>{appointmentData.doctorSpecialty}</p>
+                                                    <p className='text-[11px] md:text-[10px] text-gray-500 uppercase font-semibold tracking-wide'>Specialty</p>
+                                                    <p className='font-semibold text-cyan-600 text-sm md:text-sm mt-1.5 md:mt-1 leading-tight'>{appointmentData.doctorSpecialty}</p>
                                                 </div>
                                                 <div>
-                                                    <p className='text-[9px] md:text-[10px] text-gray-400 uppercase font-medium'>Date</p>
-                                                    <p className='font-semibold text-gray-800 text-xs md:text-sm mt-0.5 md:mt-1'>{appointmentData.date}</p>
+                                                    <p className='text-[11px] md:text-[10px] text-gray-500 uppercase font-semibold tracking-wide'>Date</p>
+                                                    <p className='font-semibold text-gray-800 text-sm md:text-sm mt-1.5 md:mt-1 leading-tight'>{appointmentData.date}</p>
                                                 </div>
                                                 <div>
-                                                    <p className='text-[9px] md:text-[10px] text-gray-400 uppercase font-medium'>Time</p>
-                                                    <p className='font-semibold text-gray-800 text-xs md:text-sm mt-0.5 md:mt-1'>{appointmentData.time}</p>
+                                                    <p className='text-[11px] md:text-[10px] text-gray-500 uppercase font-semibold tracking-wide'>Time</p>
+                                                    <p className='font-semibold text-gray-800 text-sm md:text-sm mt-1.5 md:mt-1 leading-tight'>{appointmentData.time}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -752,18 +752,18 @@ const Appointment = () => {
                                         {/* Fee & QR - Side by side on mobile, separate sections on desktop */}
                                         <div className='flex md:contents order-2 border-t md:border-t-0 border-dashed border-gray-200'>
                                             {/* Fee - Shows in middle on desktop */}
-                                            <div className='bg-gradient-to-b from-green-50 to-emerald-50 p-4 md:p-6 flex flex-col items-center justify-center flex-1 md:flex-initial md:min-w-[120px] md:border-x border-r md:border-r-0 border-dashed border-gray-200 md:order-1'>
-                                                <p className='text-[10px] md:text-[10px] text-gray-500 uppercase font-semibold'>Consultation</p>
-                                                <p className='text-[10px] md:text-[10px] text-gray-500 uppercase font-semibold'>Fee</p>
-                                                <p className='font-bold text-green-600 text-xl md:text-lg mt-1'>{currencySymbol}{appointmentData.price}</p>
+                                            <div className='bg-gradient-to-b from-green-50 to-emerald-50 p-5 md:p-6 flex flex-col items-center justify-center flex-1 md:flex-initial md:min-w-[120px] md:border-x border-r md:border-r-0 border-dashed border-gray-200 md:order-1'>
+                                                <p className='text-xs md:text-[10px] text-gray-600 uppercase font-bold tracking-wide'>Consultation</p>
+                                                <p className='text-xs md:text-[10px] text-gray-600 uppercase font-bold tracking-wide'>Fee</p>
+                                                <p className='font-bold text-green-600 text-2xl md:text-lg mt-2'>{currencySymbol}{appointmentData.price}</p>
                                             </div>
 
                                             {/* QR Code - Shows at end on desktop */}
-                                            <div className='p-4 md:p-6 flex items-center justify-center bg-gray-50 flex-1 md:flex-initial md:order-2'>
-                                                <div className='p-2 md:p-3 bg-white border-2 border-gray-200 rounded-lg md:rounded-xl shadow-sm'>
+                                            <div className='p-5 md:p-6 flex items-center justify-center bg-gray-50 flex-1 md:flex-initial md:order-2'>
+                                                <div className='p-3 md:p-3 bg-white border-2 border-gray-200 rounded-xl md:rounded-xl shadow-sm'>
                                                     {/* Mobile QR */}
                                                     <div className='block md:hidden'>
-                                                        <QRCode value={appointmentData.qrData} size={80} level="H" />
+                                                        <QRCode value={appointmentData.qrData} size={120} level="H" />
                                                     </div>
                                                     {/* Desktop QR */}
                                                     <div className='hidden md:block'>
@@ -775,16 +775,16 @@ const Appointment = () => {
                                     </div>
 
                                     {/* Bottom Buttons */}
-                                    <div className='flex gap-2 md:gap-3 p-3 md:p-4 bg-gray-50 border-t border-gray-200'>
+                                    <div className='flex gap-3 md:gap-3 p-4 md:p-4 bg-gray-50 border-t border-gray-200'>
                                         <button
                                             onClick={() => { setShowTicket(false); navigate('/my-appointments') }}
-                                            className="flex-1 py-2.5 md:py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-lg md:rounded-xl text-xs md:text-sm"
+                                            className="flex-1 py-3 md:py-3 bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-white font-semibold rounded-xl md:rounded-xl text-sm md:text-sm transition-colors shadow-sm"
                                         >
                                             View Appointments
                                         </button>
                                         <button
                                             onClick={() => setShowTicket(false)}
-                                            className="flex-1 py-2.5 md:py-3 bg-white border border-gray-200 hover:bg-gray-100 text-gray-600 font-semibold rounded-lg md:rounded-xl text-xs md:text-sm"
+                                            className="flex-1 py-3 md:py-3 bg-white border-2 border-gray-300 hover:bg-gray-50 active:bg-gray-100 text-gray-700 font-semibold rounded-xl md:rounded-xl text-sm md:text-sm transition-colors"
                                         >
                                             Close
                                         </button>
